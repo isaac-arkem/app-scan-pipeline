@@ -1,0 +1,2596 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "title": "Bevigil OSINT API",
+    "version": "1.0.0",
+    "x-logo": {
+      "url": "https://d1xbgwjg7a97qz.cloudfront.net/bevigil-assets/images/logo/logoLight.svg"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://osint.bevigil.com"
+    }
+  ],
+  "paths": {
+    "/api/{package_id}/wordlist/": {
+      "get": {
+        "summary": "Wordlist",
+        "operationId": "GetWordlist_api__package_id__wordlist__get",
+        "description": "This API endpoint will take a package ID as input and will return a wordlist created by keywords extracted from different endpoints (eg. URLs, file paths) found in the APK.",
+        "x-codeSamples": [
+          {
+            "lang": "cURL",
+            "label": "cURL",
+            "source": "curl --location --request GET 'http://osint.bevigil.com/api/com.example.app/wordlist/' \\\n--header 'X-Access-Token: <API Key Here>'\n"
+          }
+        ],
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Package Id",
+              "maxLength": 255,
+              "minLength": 1,
+              "type": "string"
+            },
+            "name": "package_id",
+            "in": "path"
+          },
+          {
+            "required": true,
+            "schema": {
+              "title": "X-Access-Token",
+              "type": "string"
+            },
+            "name": "X-Access-Token",
+            "in": "header"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Wordlist"
+                },
+                "examples": {
+                  "wordlist-200": {
+                    "value": {
+                      "package_id": "com.example.customer",
+                      "raw_wordlist": [
+                        "/app/launch",
+                        "/credit-app/acceptcredit",
+                        "/v1/ofs/upload_document",
+                        "/v1/ofs/loan_progress_info",
+                        "/v3/group_channels/%s/messages",
+                        "/v3/open_channels/%s/messages/changelogs",
+                        "/v3/group_channels/%s/messages/changelogs",
+                        "/v3/users/%s/my_group_channels/changelogs",
+                        "/v1/userBanners/dashboard",
+                        "/v1/payzappint/generatePayZappBill",
+                        "/v1/account/example/init-payload",
+                        "/v1/payuint/success",
+                        "/v1/payuint/failure",
+                        "/v1/user/feedback/askOnSuccess",
+                        "com.google.android.gms.ads",
+                        "/v1/account/getVoucherCashBalanceSplit",
+                        "/v1/payuint/deletesavedCard",
+                        "/v1/payuint/status",
+                        "/v4/account/transactions",
+                        "/v4/account/transactions/support",
+                        "/v1/account/transaction/support-direction",
+                        "/v3/servicePayments/utility/payUtilityBill",
+                        "/v3/mobile/getOperatorCircle",
+                        "/v3/servicePayments/operatorConfig/operators",
+                        "/v3/servicePayments/getPlans",
+                        "/v3/servicePayments/rechargeMobile",
+                        "/v2/servicePayments/payMobilePostpaidBill",
+                        "/v2/servicePayments/getRechargeStatus",
+                        "/v3/servicePayments/utility/fetchUtilityBill",
+                        "/v3/analytics/install",
+                        "v4/payment/initiate_purchase",
+                        "v4/payment/purchase_status",
+                        "v3/ola_share/cancel_retry"
+                      ],
+                      "wordlist": [
+                        "/app/launch",
+                        "/launch",
+                        "/credit-app/acceptcredit",
+                        "/v1/ofs/upload_document",
+                        "/ofs/upload_document",
+                        "/v1/ofs/loan_progress_info",
+                        "/v1/postpaid/postpaidDashboard",
+                        "/postpaid/postpaidDashboard",
+                        "/v1/user/consents",
+                        "/user/consents",
+                        "/v1/account/balances/transfer",
+                        "/account/balances/transfer",
+                        "/v2/payuint/generateBillWithoutPaymentHash",
+                        "/payuint/generateBillWithoutPaymentHash",
+                        "/v1/payuint/generateBillForType",
+                        "olaconnect/olacast/inapp/get_template/default",
+                        "/olacast/inapp/get_template/default",
+                        "/inapp/get_template/default",
+                        "/get_template/default",
+                        "marketing/v2/feedback/push",
+                        "/v2/feedback/push",
+                        "/feedback/push",
+                        "olaconnect/unset/card",
+                        "v4/payment/change_payment",
+                        "v3/shuttle/pass_cancellation_reasons",
+                        "/shuttle/pass_cancellation_reasons",
+                        "v3/shuttle/shuttle_tracking_polling",
+                        "/shuttle/shuttle_tracking_polling",
+                        "v3/sos/inform_police",
+                        "/sos/inform_police",
+                        "v3/sos/deactivate_sos_signal",
+                        "/sos/deactivate_sos_signal",
+                        "v3/ola_share/active_booking",
+                        "/ola_share/active_booking",
+                        "v3/ola_share/cancel_retry",
+                        "v3/ola_share/booking_cancel",
+                        "/ola_share/booking_cancel",
+                        "api/v1/callback/push_notification",
+                        "/v1/callback/push_notification",
+                        "/callback/push_notification",
+                        "v1/ola_pass/subscription_details",
+                        "/ola_pass/subscription_details",
+                        "v1/ola_pass/cancel_subscription",
+                        "example/certificates_v1/",
+                        "/certificates_v1/"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "wordlist-400": {
+                    "value": {
+                      "detail": "Bad Request"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "wordlist-401": {
+                    "value": {
+                      "detail": "Access Token Invalid"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment Required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "wordlist-402": {
+                    "value": {
+                      "detail": "No Credits left. Purchase new credits"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "wordlist-422": {
+                    "value": {
+                      "detail": "Slow down! Rate limit exceeded"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/{package_id}/hosts/": {
+      "get": {
+        "summary": "Hosts",
+        "operationId": "GetAllHost_api__package_id__hosts__get",
+        "description": "This API endpoint will take a package ID as input and will return all the unique hosts found in the APK.",
+        "x-codeSamples": [
+          {
+            "lang": "cURL",
+            "label": "cURL",
+            "source": "curl --location --request GET 'http://osint.bevigil.com/api/com.example.app/hosts/' \\\n--header 'X-Access-Token: <API Key Here>'\n"
+          }
+        ],
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Package Id",
+              "maxLength": 255,
+              "minLength": 1,
+              "type": "string"
+            },
+            "name": "package_id",
+            "in": "path"
+          },
+          {
+            "required": true,
+            "schema": {
+              "title": "X-Access-Token",
+              "type": "string"
+            },
+            "name": "X-Access-Token",
+            "in": "header"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Hosts"
+                },
+                "examples": {
+                  "hosts-200": {
+                    "value": {
+                      "package_id": "com.example.customer",
+                      "hosts": [
+                        "assets.example.in",
+                        "api.sandbox.braintreegateway.com",
+                        "api.braintreegateway.com",
+                        "codepush.appcenter.ms",
+                        "q.stripe.com",
+                        "m.stripe.com",
+                        "api.stripe.com",
+                        "pagead2.googlesyndication.com",
+                        "www.example.com",
+                        "support.google.com",
+                        "googleads.g.doubleclick.net",
+                        "imasdk.googleapis.com",
+                        "app-measurement.com",
+                        "www.googleadservices.com",
+                        "google.com",
+                        "www.googleapis.com",
+                        "developers.google.com",
+                        "firebase-settings.crashlytics.com",
+                        "update.crashlytics.com",
+                        "reports.crashlytics.com",
+                        "firebaseremoteconfig.googleapis.com",
+                        "www.android.com",
+                        "facebook.com",
+                        ".facebook.com",
+                        "api.xmpush.xiaomi.com",
+                        "resolver.msg.xiaomi.net",
+                        "register.xmpush.global.xiaomi.com",
+                        "fr.register.xmpush.global.xiaomi.com",
+                        "ru.register.xmpush.global.xiaomi.com",
+                        "idmb.register.xmpush.global.xiaomi.com",
+                        "mqa.kaptcha.com",
+                        "resident.uidai.example.com",
+                        "info.example.com",
+                        "mobiletest.example.com",
+                        "example.example.co",
+                        "ow-foods.example.co",
+                        "jp-remote-assets.s3.ap-south-1.amazonaws.com",
+                        "apiv2mumbai.example.com",
+                        "apiv2eu.example.com",
+                        "apiv2.example.com",
+                        "webhook.logentries.com"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "wordlist-400": {
+                    "value": "{\"detail\":\"Bad Request\"}"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "wordlist-401": {
+                    "value": "{\"detail\":\"Access Token Invalid\"}"
+                  }
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment Required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "wordlist-402": {
+                    "value": "{\"detail\":\"No Credits left. Purchase new credits\"}"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "wordlist-422": {
+                    "value": "{\"detail\":\"Slow down! Rate limit exceeded\"}"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/{package_id}/S3-buckets/": {
+      "get": {
+        "summary": "S3 Buckets",
+        "operationId": "GetS3_api__package_id__S3_buckets__get",
+        "description": "This API endpoint will take a package ID as input and will return all the S3 bucket URLs found in the APK.",
+        "x-codeSamples": [
+          {
+            "lang": "cURL",
+            "label": "cURL",
+            "source": "curl --location --request GET 'http://osint.bevigil.com/api/com.example.app/S3-buckets/' \\\n--header 'X-Access-Token: <API Key Here>'\n"
+          }
+        ],
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Package Id",
+              "maxLength": 255,
+              "minLength": 1,
+              "type": "string"
+            },
+            "name": "package_id",
+            "in": "path"
+          },
+          {
+            "required": true,
+            "schema": {
+              "title": "X-Access-Token",
+              "type": "string"
+            },
+            "name": "X-Access-Token",
+            "in": "header"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/S3Buckets"
+                },
+                "examples": {
+                  "s3-200": {
+                    "value": {
+                      "package_id": "com.example",
+                      "s3_buckets": [
+                        "https://s3.ap-south-1.amazonaws.com/udio2-prod/static_banner",
+                        "https://example.s3.ap-south-1.amazonaws.com/assets/images/example-app/marketing_banners",
+                        "https://example.s3.ap-south-1.amazonaws.com/assets/videos/OneFreedom+Explanatory+Video+-+5+Lakh+2+m...",
+                        "https://credit-line.s3.ap-south-1.amazonaws.com/assets/videos/e-mandate-guide.mp4"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "wordlist-400": {
+                    "value": "{\"detail\":\"Bad Request\"}"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "wordlist-401": {
+                    "value": "{\"detail\":\"Access Token Invalid\"}"
+                  }
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment Required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "wordlist-402": {
+                    "value": "{\"detail\":\"No Credits left. Purchase new credits\"}"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "wordlist-422": {
+                    "value": "{\"detail\":\"Slow down! Rate limit exceeded\"}"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/{package_id}/all-assets/": {
+      "get": {
+        "summary": "All Assets",
+        "operationId": "GetAllAssets_api__package_id__all_assets__get",
+        "description": "This API endpoint will take a package ID as input and will return all of the assets such as URLs, Hostnames, IP Addresses, Emails, File Paths, Firebase URLs, S3 URLs, etc associated with that APK.",
+        "x-codeSamples": [
+          {
+            "lang": "cURL",
+            "label": "cURL",
+            "source": "curl --location --request GET 'http://osint.bevigil.com/api/com.example.app/all-assets/' \\\n--header 'X-Access-Token: <API Key Here>'\n"
+          }
+        ],
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Package Id",
+              "maxLength": 255,
+              "minLength": 1,
+              "type": "string"
+            },
+            "name": "package_id",
+            "in": "path"
+          },
+          {
+            "required": true,
+            "schema": {
+              "title": "X-Access-Token",
+              "type": "string"
+            },
+            "name": "X-Access-Token",
+            "in": "header"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Asset"
+                },
+                "examples": {
+                  "all-200": {
+                    "value": {
+                      "package_id": "com.example",
+                      "host": {
+                        "url": [
+                          "https://marketing.example.in/examplepoints/rewards.php?page=statement",
+                          "https://api.ipify.org",
+                          "https://patient.example.in/patient/consult-doctor",
+                          "https://web.example.in/services/credit-line",
+                          "https://web-uat1.example.in/v1/android/update",
+                          "https://wallet.udio.in/v1/android/update",
+                          "https://butler.razorpay.com/v1/settings",
+                          "https://cdn.razorpay.com/static/otpelf/",
+                          "https://lumberjack.razorpay.com/v1/track",
+                          "https://cdn.razorpay.com/wallet/",
+                          "https://cdn.razorpay.com/wallet-sq/",
+                          "https://cdn.razorpay.com/bank/",
+                          "https://wallet-uat.udio.in/v1/android/update",
+                          "https://wallet-uat1.udio.in/v1/android/update",
+                          "https://www.google.com/search?q=",
+                          "http://play.google.com/store/apps/details",
+                          "https://edis.cdslindia.com/home/generatepin",
+                          "https://hubhopper.com/example",
+                          "https://web.example.in/bbps/complaints",
+                          "http://apache.org/xml/features/validation/schema",
+                          "http://xml.org/sax/properties/declaration-handler",
+                          "http://xml.org/sax/properties/lexical-handler",
+                          "https://netbanking.yesbank.co.in/netbanking/merchant\\",
+                          "https://api.razorpay.com/v1/checkout\\",
+                          "https://cn.register.xmpush.xiaomi.com",
+                          "https://register.xmpush.global.xiaomi.com",
+                          "https://fr.register.xmpush.global.xiaomi.com",
+                          "https://ru.register.xmpush.global.xiaomi.com",
+                          "https://idmb.register.xmpush.global.xiaomi.com",
+                          "http://static.wizrocket.com/android/ico/"
+                        ],
+                        "file_path": [
+                          "/Annotation",
+                          "/collections/Iterable",
+                          "/collections/MutableIterable",
+                          "/collections/Collection",
+                          "/collections/MutableMap.MutableEntry",
+                          "/collections/Iterator",
+                          "/collections/MutableIterator",
+                          "/collections/ListIterator",
+                          "/collections/MutableListIterator",
+                          "/cpufreq/cpuinfo_max_freq",
+                          "/Number",
+                          "/ShortArray",
+                          "/BooleanArray",
+                          "/CharArray",
+                          "/Cloneable"
+                        ],
+                        "host": [
+                          "web.example.in",
+                          "edis.cdslindia.com",
+                          "www.udio.in",
+                          "patient.example.in",
+                          "pharmacy.example.com",
+                          "marketing.example.in",
+                          "m.examplestocks.com",
+                          "hubhopper.com",
+                          "example-10acd.firebaseio.com",
+                          "games.example.in",
+                          "s3.ap-south-1.amazonaws.com",
+                          "wallet.udioforyou.com",
+                          "payment.example.com",
+                          "loan.example.in",
+                          "example.s3.ap-south-1.amazonaws.com",
+                          "play.google.com",
+                          "www.example.com.com",
+                          "www.example.in",
+                          "www.example.com",
+                          "www.example.com",
+                          "web-uat1.example.in",
+                          "wallet.udio.in",
+                          "butler.razorpay.com",
+                          "static.wizrocket.com"
+                        ],
+                        "filename": [
+                          "progress_loader.json",
+                          "version.json",
+                          "ff_cache.json",
+                          "pacman.json",
+                          "roulette.json",
+                          "billard.json",
+                          "dart.json",
+                          "flick.json",
+                          "inactive_button.json",
+                          "manifest.json"
+                        ],
+                        "rest_api": [
+                          "v1/save-card/show-form",
+                          "example/v1/user/verify",
+                          "example/v3/user/login",
+                          "example/v1/user/validate-mpin",
+                          "v1/user/validate-token",
+                          "example/v1/user/send-otp",
+                          "example/v2/user/reset-mpin",
+                          "example/v3/user/register",
+                          "example/v2/user/get-profile",
+                          "v1/supersaver/get-application?serviceCheck=true",
+                          "v1/supersaver/debit-info",
+                          "v1/supersaver/get-transaction",
+                          "v2/api/wallet/transactions",
+                          "v1/udio-card/update",
+                          "v2/udio-card/block",
+                          "v1/user/get-preferences",
+                          "kotlin/reflect/jvm/internal/impl/utils/SmartList",
+                          "kotlin/reflect/jvm/internal/impl/utils/DFS",
+                          "v1/recharge/plans",
+                          "v2/billpay-recharge/add",
+                          "v1/recharge/fetch-bill",
+                          "v2/recharge/service-providers",
+                          "v3/user/balance",
+                          "v1/user/app-static/shopping",
+                          "v1/creditline/curative-tile",
+                          "v1/supersaver/update-kyc-state",
+                          "example/v1/metadata/wallet_kyc_aadhaar",
+                          "example/v1/aadhaarxml/webcallback",
+                          "v1/supersaver/document-metadata",
+                          "v1/user/app-static/DOF-top-benefits",
+                          "v1/proxy/analytics/get-user-coupon-details",
+                          "v1/proxy/analytics/verify-cms-coupon/",
+                          "v1/user/home-page",
+                          "v1/user/customer-support",
+                          "v1/bank-transfer/processing-fee",
+                          "v1/group/add",
+                          "v1/group/delete",
+                          "v1/send-money/add",
+                          "kotlin/reflect/jvm/internal/impl/utils/WrappedValues",
+                          "America/Argentina/Buenos_Aires",
+                          "America/Indiana/Indianapolis",
+                          "payments/create/ajax",
+                          "payments/create/checkout/json?key_id=",
+                          "payments/validate/account",
+                          "payments/create/checkout",
+                          "config/app/",
+                          "yeshen/simulator/",
+                          "oppo/r7c/r7c"
+                        ],
+                        "ip_url": [
+                          "rtp://0.0.0.0"
+                        ],
+                        "relative_endpoint": [
+                          "com/clevertap/android/sdk/certificates/DigiCertGlobalRootCA.crt",
+                          "com/clevertap/android/sdk/certificates/DigiCertSHA2SecureServerCA.crt",
+                          "org/threeten/bp/TZDB.dat"
+                        ],
+                        "IP Address disclosure": [
+                          "0.0.0.0",
+                          "10.0.0.200",
+                          "10.237.14.141",
+                          "127.0.0.1"
+                        ],
+                        "AWS URL": [
+                          "https://s3.ap-south-1.amazonaws.com/udio2-prod/static_banner",
+                          "https://example.s3.ap-south-1.amazonaws.com/assets/images/example-app/marketing_banners",
+                          "https://example.s3.ap-south-1.amazonaws.com/assets/videos/OneFreedom+Explanatory+Video+-+5+Lakh+2+m...",
+                          "https://credit-line.s3.ap-south-1.amazonaws.com/assets/videos/e-mandate-guide.mp4"
+                        ],
+                        "email": [
+                          "ping@example.in",
+                          "this@AbstractTypeConstructor.parame",
+                          "this@AbstractTypeConstructor.built",
+                          "this@createCapturedIfNeeded.type",
+                          "ping@udio.in",
+                          "support@example.com",
+                          "dnbsnewdelhi@rbi.org",
+                          "mrustagi@example.com",
+                          "mailto:support@example.com",
+                          "grievance@example.com",
+                          "nodal@example.com",
+                          "nbfcochennai@rbi.org",
+                          "nbfcomumbai@rbi.org",
+                          "nbfconewdelhi@rbi.org",
+                          "sales-us@agora.io",
+                          "support@agora.io",
+                          "mailto:support@agora.io",
+                          "u0013android@android.com"
+                        ],
+                        "Firebase URL": [
+                          "https://example-10acd.firebaseio.com"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "wordlist-400": {
+                    "value": "{\"detail\":\"Bad Request\"}"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "wordlist-401": {
+                    "value": "{\"detail\":\"Access Token Invalid\"}"
+                  }
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment Required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "wordlist-402": {
+                    "value": "{\"detail\":\"No Credits left. Purchase new credits\"}"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "wordlist-422": {
+                    "value": "{\"detail\":\"Slow down! Rate limit exceeded\"}"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/{package_id}/params/": {
+      "get": {
+        "summary": "URL Params",
+        "operationId": "GetURLParams_api__package_id__params__get",
+        "description": "This API endpoint will take a package ID as input and will return a key-value pair of query parameters and values extracted from all the URLs found in the APK.",
+        "x-codeSamples": [
+          {
+            "lang": "cURL",
+            "label": "cURL",
+            "source": "curl --location --request GET 'http://osint.bevigil.com/api/com.example.app/params/' \\\n--header 'X-Access-Token: <API Key Here>'\n"
+          }
+        ],
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Package Id",
+              "maxLength": 255,
+              "minLength": 1,
+              "type": "string"
+            },
+            "name": "package_id",
+            "in": "path"
+          },
+          {
+            "required": true,
+            "schema": {
+              "title": "X-Access-Token",
+              "type": "string"
+            },
+            "name": "X-Access-Token",
+            "in": "header"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/URLParams"
+                },
+                "examples": {
+                  "params-200": {
+                    "value": {
+                      "package_id": "in.example.android",
+                      "url_params": {
+                        "id": [
+                          "gmob-apps"
+                        ],
+                        "v2": [
+                          "true?makePayment=false"
+                        ],
+                        "RID": [
+                          "40147"
+                        ],
+                        "VAA": [
+                          "B"
+                        ],
+                        "id_type": [
+                          "adid"
+                        ],
+                        "sdk_version": [
+                          "%s"
+                        ],
+                        "rdid": [
+                          "..."
+                        ],
+                        "user_code": [
+                          "%1$s"
+                        ],
+                        "qr": [
+                          "1"
+                        ],
+                        "color": [
+                          "red"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "wordlist-400": {
+                    "value": "{\"detail\":\"Bad Request\"}"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "wordlist-401": {
+                    "value": "{\"detail\":\"Access Token Invalid\"}"
+                  }
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment Required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "wordlist-402": {
+                    "value": "{\"detail\":\"No Credits left. Purchase new credits\"}"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "wordlist-422": {
+                    "value": "{\"detail\":\"Slow down! Rate limit exceeded\"}"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/{domain_name}/apps/": {
+      "get": {
+        "summary": "Apps",
+        "operationId": "GetApps_api__domain_name__apps__get",
+        "description": "This API endpoint will take the domain name as input and will return all the Android apps which have the domain names mentioned in their APK.",
+        "x-codeSamples": [
+          {
+            "lang": "cURL",
+            "label": "cURL",
+            "source": "curl --location --request GET 'http://osint.bevigil.com/api/example.com/apps/' \\\n--header 'X-Access-Token: <API Key Here>'\n"
+          }
+        ],
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Domain Name",
+              "maxLength": 255,
+              "minLength": 1,
+              "type": "string"
+            },
+            "name": "domain_name",
+            "in": "path"
+          },
+          {
+            "required": true,
+            "schema": {
+              "title": "X-Access-Token",
+              "type": "string"
+            },
+            "name": "X-Access-Token",
+            "in": "header"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetApps"
+                },
+                "examples": {
+                  "apps-200": {
+                    "value": {
+                      "packages": [
+                        {
+                          "package_id": "com.app.example",
+                          "app_name": "Example - Personal Loan and Investments",
+                          "app_version": "5.9.28"
+                        },
+                        {
+                          "package_id": "com.application.example",
+                          "app_name": "Example - Online Food Delivery & Restaurant Reviews",
+                          "app_version": "16.0.5"
+                        },
+                        {
+                          "package_id": "com.example.app",
+                          "app_name": "Example - Rent Bikes & Scooters | Sanitized Rentals",
+                          "app_version": "4.0.5"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "wordlist-400": {
+                    "value": "{\"detail\":\"Bad Request\"}"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "wordlist-401": {
+                    "value": "{\"detail\":\"Access Token Invalid\"}"
+                  }
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment Required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "wordlist-402": {
+                    "value": "{\"detail\":\"No Credits left. Purchase new credits\"}"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "wordlist-422": {
+                    "value": "{\"detail\":\"Slow down! Rate limit exceeded\"}"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/{domain_name}/subdomains/": {
+      "get": {
+        "summary": "Subdomains",
+        "operationId": "GetSubdomains_api__domain_name__subdomains__get",
+        "description": "This API endpoint will take a domain name as input and will return the subdomains of that domain.",
+        "x-codeSamples": [
+          {
+            "lang": "cURL",
+            "label": "cURL",
+            "source": "curl --location --request GET 'http://osint.bevigil.com/api/example.com/subdomains/' \\\n--header 'X-Access-Token: <API Key Here>'\n"
+          }
+        ],
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Domain Name",
+              "maxLength": 255,
+              "minLength": 1,
+              "type": "string"
+            },
+            "name": "domain_name",
+            "in": "path"
+          },
+          {
+            "required": true,
+            "schema": {
+              "title": "X-Access-Token",
+              "type": "string"
+            },
+            "name": "X-Access-Token",
+            "in": "header"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Subdomains"
+                },
+                "examples": {
+                  "subdomains-200": {
+                    "value": {
+                      "domain": "example.com",
+                      "subdomains": [
+                        "pguat.example.com",
+                        "easypay.example.com",
+                        "accounts-staging.example.com",
+                        "insurance-staging.example.com",
+                        "prs-staging.example.com",
+                        "pic-staging.example.com",
+                        "digitalapiproxy-staging.example.com",
+                        "ump-staging.example.com",
+                        "stage-api.lending.example.com",
+                        "ffwallet-staging.example.com",
+                        "ump3-staging.example.com",
+                        "goldengate-staging5.example.com",
+                        "cir-staging.example.com",
+                        "goldengate-staging12.example.com",
+                        "wealth-subscription-staging.example.com",
+                        "ump-staging3.example.com",
+                        "goldengate-staging13.example.com",
+                        "middleware-staging.example.com",
+                        "catalog-staging.example.com",
+                        "apiproxy.example.com",
+                        "assetscdn1.example.com",
+                        "developerminiapp.example.com",
+                        "digitalproxy-staging.example.com",
+                        "cart-staging.example.com",
+                        "digitalcatalog-staging.example.com",
+                        "loyalty-staging.example.com",
+                        "contacts-staging.example.com",
+                        "business-staging.example.com",
+                        "staging-dashboard.example.com",
+                        "staging-merchant.example.com",
+                        "dev-merchant-analytics.example.com",
+                        "compliance.example.com",
+                        "catalogre.example.com",
+                        "thunderbolt.example.com"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "wordlist-400": {
+                    "value": "{\"detail\":\"Bad Request\"}"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "wordlist-401": {
+                    "value": "{\"detail\":\"Access Token Invalid\"}"
+                  }
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment Required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "wordlist-402": {
+                    "value": "{\"detail\":\"No Credits left. Purchase new credits\"}"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "wordlist-422": {
+                    "value": "{\"detail\":\"Slow down! Rate limit exceeded\"}"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/{domain_name}/urls/": {
+      "get": {
+        "summary": "URLs",
+        "operationId": "GetURLs_api__domain_name__urls__get",
+        "description": "This API endpoint will take a domain name(example: xvigil.com) as input and will return all of the URLs(example: xvigil.com/infra-monitor/web-apps?issue=) for that domain.",
+        "x-codeSamples": [
+          {
+            "lang": "cURL",
+            "label": "cURL",
+            "source": "curl --location --request GET 'http://osint.bevigil.com/api/example.com/urls/' \\\n--header 'X-Access-Token: <API Key Here>'\n"
+          }
+        ],
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Domain Name",
+              "maxLength": 255,
+              "minLength": 1,
+              "type": "string"
+            },
+            "name": "domain_name",
+            "in": "path"
+          },
+          {
+            "required": true,
+            "schema": {
+              "title": "X-Access-Token",
+              "type": "string"
+            },
+            "name": "X-Access-Token",
+            "in": "header"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/URLs"
+                },
+                "examples": {
+                  "urls-200": {
+                    "value": {
+                      "domain": "example.com",
+                      "urls": [
+                        "https://pguat.example.com/oltp/HANDLER_INTERNAL/TXNSTATUS",
+                        "https://easypay.example.com/exampleAnalytics/logerror",
+                        "https://easypay.example.com/exampleAnalytics/logevent",
+                        "https://pguat.example.com/oltp/HANDLER_INTERNAL/CANCEL_TXN",
+                        "https://pguat.example.com:8448/CAS/ChecksumGenerator",
+                        "https://pguat.example.com/oltp-web/processTransaction",
+                        "https://example.com/loan-emi-payment/mudrakwik",
+                        "https://webappsstatic.example.com/cst/v2/index.html",
+                        "https://cart.example.com/payment/status",
+                        "https://pages.example.com/help.html#newcash",
+                        "https://loanleads.example.com/home/isEnabled",
+                        "https://assetscdn.example.com/pg/otp.gif",
+                        "https://storefront.example.com/v2/h/events/recharge",
+                        "https://storefront.example.com/v2/h/example-homepage",
+                        "https://example.com/rentalservices/v1/index.html",
+                        "https://example.com/automatic-subscription/v1/index.html",
+                        "https://example.com/h5rechargeutility/beta/index.html",
+                        "https://example.com/offer/example-upi-faq/#account-setup",
+                        "https://storefront.example.com/v2/h/flyout",
+                        "https://storefront-staging.example.com/v2/h/stage-flyout",
+                        "https://cart.example.com/v1/lead/launch",
+                        "https://cart.example.com/v1/myOrders",
+                        "https://cart.example.com/v1/userinfo",
+                        "https://accounts.example.com/api/forgetPass",
+                        "https://accounts.example.com/user/",
+                        "https://tickets.example.com/v1/movies/order/prevalidate",
+                        "https://travel.example.com/bus/v2/trip",
+                        "https://accounts.example.com/user/preferences",
+                        "https://tickets.example.com/v1/entertainment/events/cities",
+                        "https://tickets.example.com/v1/entertainment/events/list/",
+                        "https://storefront.example.com/v2/h/bazaar",
+                        "https://catalog.example.com/v1/mobile/store/",
+                        "https://cart.example.com/v1/cancelPromo",
+                        "https://cart.example.com/v1/cart",
+                        "https://apiproxy.example.com/user/ticket",
+                        "https://apiproxy.example.com/ticket/labels",
+                        "https://catalog.example.com/v1/c/coupons",
+                        "https://apiproxy.example.com/v1/user/ticket/addComments",
+                        "https://apiproxy.example.com/v1/user/ticket/getAttachment",
+                        "https://apiproxy.example.com/v1/user/ticket/getComments",
+                        "https://apiproxy.example.com/v1/user/tickets",
+                        "https://catalog.example.com/v1/mobile/getproductscatalog",
+                        "https://catalog.example.com/brand/seller",
+                        "https://cart-staging.example.com/v1/expresscart/checkout",
+                        "https://staging.example.com/care/cst-home"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "wordlist-400": {
+                    "value": "{\"detail\":\"Bad Request\"}"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "wordlist-401": {
+                    "value": "{\"detail\":\"Access Token Invalid\"}"
+                  }
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment Required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "wordlist-402": {
+                    "value": "{\"detail\":\"No Credits left. Purchase new credits\"}"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "wordlist-422": {
+                    "value": "{\"detail\":\"Slow down! Rate limit exceeded\"}"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/{keyword}/S3-keyword/": {
+      "get": {
+        "summary": "Search for S3",
+        "operationId": "GetS3Keyword_api__keyword__S3_keyword__get",
+        "description": "This API endpoint will take a keyword (example: Example) as input and will return all of the S3 URLs (example: https://s3.ap-south-1.amazonaws.com/example-public/ ) for that keyword.",
+        "x-codeSamples": [
+          {
+            "lang": "cURL",
+            "label": "cURL",
+            "source": "curl --location --request GET 'http://osint.bevigil.com/api/bank/S3-keyword/' \\\n--header 'X-Access-Token: <API Key Here>'\n"
+          }
+        ],
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Keyword",
+              "maxLength": 255,
+              "minLength": 1,
+              "type": "string"
+            },
+            "name": "keyword",
+            "in": "path"
+          },
+          {
+            "required": true,
+            "schema": {
+              "title": "X-Access-Token",
+              "type": "string"
+            },
+            "name": "X-Access-Token",
+            "in": "header"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/S3BucketsKeyword"
+                },
+                "examples": {
+                  "s3key-200": {
+                    "value": {
+                      "keyword": "bank",
+                      "s3_buckets": [
+                        "https://paymentsbank-bcapp-hosting.s3.ap-south-1.amazonaws.com/Video_KYC_app_video.gif",
+                        "https://paymentsbank-bcapp-hosting.s3.ap-south-1.amazonaws.com/Sample+File",
+                        "https://webapp-prod-assets.s3.amazonaws.com/assets/payment_modes/icon_netbanking.png",
+                        "https://jep-content.s3.ap-south-1.amazonaws.com/MyJio_Client/JPB/Icons/UPI+Icons/ic_bank_transfer...",
+                        "https://headfone-images.s3.ap-south-1.amazonaws.com/banks/SBIN.png",
+                        "https://headfone-images.s3.ap-south-1.amazonaws.com/banks/HDFC.png",
+                        "https://headfone-images.s3.ap-south-1.amazonaws.com/banks/ICIC.png",
+                        "https://headfone-images.s3.ap-south-1.amazonaws.com/banks/UTIB.png",
+                        "https://paymentsbank-bcapp-hosting.s3.ap-south-1.amazonaws.com/Video_KYC_app_video.gif",
+                        "https://paymentsbank-bcapp-hosting.s3.ap-south-1.amazonaws.com/Sample+File",
+                        "https://tafel-images.s3.ap-south-1.amazonaws.com/bank_logos/",
+                        "https://tafel-images.s3.ap-south-1.amazonaws.com/bank_logos/{{outlet}}.jpg\\\\\\",
+                        "https://tafel-images.s3.ap-south-1.amazonaws.com/bank_logos/{{outlet}}.jpg\\",
+                        "https://s3-ap-south-1.amazonaws.com/betterbutterbucket-silver/emoji/bank.png",
+                        "https://s3-sa-east-1.amazonaws.com/picpay/banks/ico_cadastro_original.png",
+                        "https://lending-resources.s3-ap-southeast-1.amazonaws.com/logo_vpbank.png",
+                        "https://lending-resources.s3-ap-southeast-1.amazonaws.com/logo-tpbank.png",
+                        "https://s3.amazonaws.com/bankoaoqaweb/qa2/index.html?mobileview=ease",
+                        "https://s3-static-bank-info.s3.amazonaws.com/banks.json",
+                        "https://s3-us-west-2.amazonaws.com/prod.ad-images/House/Map/foodbank-icon.png",
+                        "https://s3-us-west-2.amazonaws.com/prod.ad-images/House/Map/foodbank-selected-icon.png",
+                        "https://indiawealth.s3.ap-south-1.amazonaws.com/public/images/expenses/bank/ICICI+Bank.jpg",
+                        "https://paymentsbank-bcapp-hosting.s3.ap-south-1.amazonaws.com/Video_KYC_app_video.gif",
+                        "https://paymentsbank-bcapp-hosting.s3.ap-south-1.amazonaws.com/Sample+File",
+                        "https://s3.amazonaws.com/bank-verification-ui/institution-logos/chase.jpg",
+                        "https://s3.amazonaws.com/bank-verification-ui/institution-logos/rbc.png",
+                        "https://s3.amazonaws.com/bank-verification-ui/institution-logos/td.png",
+                        "https://s3.amazonaws.com/bank-verification-ui/institution-logos/cibc.png",
+                        "https://s3.amazonaws.com/bank-verification-ui/institution-logos/pc.png",
+                        "https://s3.amazonaws.com/bank-verification-ui/institution-logos/scotiabank.png",
+                        "https://s3.amazonaws.com/bank-verification-ui/institution-logos/tangerine.png",
+                        "https://s3.amazonaws.com/bank-verification-ui/institution-logos/citibank.jpg",
+                        "https://s3.amazonaws.com/bank-verification-ui/institution-logos/desjardins.png",
+                        "https://s3.amazonaws.com/bank-verification-ui/institution-logos/vancity.png",
+                        "https://s3.amazonaws.com/bank-verification-ui/institution-logos/simplii.png",
+                        "https://s3.ap-south-1.amazonaws.com/afinoz.static/android/bank_detail/pl_bank_list_details_v2.json",
+                        "https://s3.ap-south-1.amazonaws.com/afinoz.static/android/bank_detail/bl_bank_list_details.json",
+                        "https://s3-ap-southeast-1.amazonaws.com/fx-public-images/wallpaper/banking-background.jpg",
+                        "https://indosat-app.s3-ap-southeast-1.amazonaws.com/logobank/",
+                        "https://s3.ap-south-1.amazonaws.com/lazypay-static-assets/images/app/bankLogo/",
+                        "https://s3.eu-central-1.amazonaws.com/n26-savings-live/raisin/legal_documents/banks/mhb/mhb.de.tc...",
+                        "https://s3.eu-central-1.amazonaws.com/n26-savings-live/raisin/legal_documents/banks/mhb/mhb.en.tc...",
+                        "https://s3-ap-southeast-1.amazonaws.com/cashbac-card/payment-type/ic_debit_card_commbank.png\\",
+                        "https://cashbac-card.s3-ap-southeast-1.amazonaws.com/payment-type/ic_debit_card_citibank.png\\",
+                        "https://s3.amazonaws.com/synapse_django/bank_logos/bofa.png",
+                        "https://s3.amazonaws.com/synapse_django/bank_logos/chase.png",
+                        "https://s3.amazonaws.com/synapse_django/bank_logos/citi.png",
+                        "https://s3.amazonaws.com/synapse_django/bank_logos/wells_fargo.png",
+                        "https://s3.amazonaws.com/synapse_django/bank_logos/cap360.png",
+                        "https://s3.amazonaws.com/synapse_django/bank_logos/pnc.png",
+                        "https://s3.amazonaws.com/synapse_django/bank_logos/td.png",
+                        "https://s3.amazonaws.com/synapse_django/bank_logos/bbt.png",
+                        "https://s3.amazonaws.com/synapse_django/bank_logos/suntrust.png",
+                        "https://s3.amazonaws.com/synapse_django/bank_logos/ally.png",
+                        "https://s3.amazonaws.com/synapse_django/bank_logos/charles_schwab.png",
+                        "https://s3.amazonaws.com/synapse_django/bank_logos/fidelity.png",
+                        "https://s3.amazonaws.com/synapse_django/bank_logos/regionsbank.png",
+                        "https://s3.amazonaws.com/synapse_django/bank_logos/usbank.png",
+                        "https://s3.amazonaws.com/synapse_django/bank_logos/usaa.png",
+                        "https://s3.amazonaws.com/synapse_django/bank_logos/first_tn.png",
+                        "https://s3-ap-southeast-1.amazonaws.com/alphafront/documents/banks_payment_gateway.pdf",
+                        "https://jamaappprod.s3.ap-south-1.amazonaws.com/mobile/useraccount/bank.png",
+                        "https://jamaappprod.s3.ap-south-1.amazonaws.com/mobile/useraccount/bank.png\\",
+                        "https://jamaappprod.s3.ap-south-1.amazonaws.com/media/kbprofiles/profiles/sbi_bank.png\\",
+                        "https://mobile-tonikbank-static-content.s3-ap-southeast-1.amazonaws.com/terms-conditions/datapriv...",
+                        "https://mobile-tonikbank-static-content.s3-ap-southeast-1.amazonaws.com/terms-conditions/terms.html",
+                        "https://mobile-tonikbank-static-content.s3-ap-southeast-1.amazonaws.com/loans-terms-conditions/lo...",
+                        "https://mobile-tonikbank-static-content.s3-ap-southeast-1.amazonaws.com/mobile/applogo.png",
+                        "https://mobile-tonikbank-static-content.s3-ap-southeast-1.amazonaws.com/mobile/icons/emergency_dt...",
+                        "https://mobile-tonikbank-static-content.s3-ap-southeast-1.amazonaws.com/mobile/icons/emergency.png",
+                        "https://mobile-tonikbank-static-content.s3-ap-southeast-1.amazonaws.com/mobile/icons/vacation_dt.png",
+                        "https://mobile-tonikbank-static-content.s3-ap-southeast-1.amazonaws.com/mobile/icons/vacation.png",
+                        "https://mobile-tonikbank-static-content.s3-ap-southeast-1.amazonaws.com/mobile/icons/tuition_dt.png",
+                        "https://mobile-tonikbank-static-content.s3-ap-southeast-1.amazonaws.com/mobile/icons/tuition.png",
+                        "https://mobile-tonikbank-static-content.s3-ap-southeast-1.amazonaws.com/mobile/icons/newride_dt.png",
+                        "https://mobile-tonikbank-static-content.s3-ap-southeast-1.amazonaws.com/mobile/icons/newride.png",
+                        "https://mobile-tonikbank-static-content.s3-ap-southeast-1.amazonaws.com/mobile/icons/gameconsole_...",
+                        "https://mobile-tonikbank-static-content.s3-ap-southeast-1.amazonaws.com/mobile/icons/gameconsole.png",
+                        "https://s3-ap-southeast-2.amazonaws.com/byond/hbank_mini2_b3/byond/com_byondapi/api/",
+                        "https://s3.amazonaws.com/bb-integration-bank-icons/",
+                        "https://s3.ap-south-1.amazonaws.com/scholar-static-assets.bankersacademy/Bankers+Academy+logo-01.png"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "wordlist-400": {
+                    "value": "{\"detail\":\"Bad Request\"}"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "wordlist-401": {
+                    "value": "{\"detail\":\"Access Token Invalid\"}"
+                  }
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment Required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "wordlist-402": {
+                    "value": "{\"detail\":\"No Credits left. Purchase new credits\"}"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "wordlist-422": {
+                    "value": "{\"detail\":\"Slow down! Rate limit exceeded\"}"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/{package_id}/report/": {
+      "get": {
+        "summary": "Get Report",
+        "operationId": "get_report_api__package_id__report__get",
+        "description": "This API endpoint will take a package ID as input and will return the bevigil scan report in JSON format.",
+        "x-codeSamples": [
+          {
+            "lang": "cURL",
+            "label": "cURL",
+            "source": "curl --location --request GET 'http://osint.bevigil.com/api/com.example.app/report/' \\\n--header 'X-Access-Token: <API Key Here>'\n"
+          }
+        ],
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Package Id",
+              "maxLength": 255,
+              "minLength": 1,
+              "type": "string"
+            },
+            "name": "package_id",
+            "in": "path"
+          },
+          {
+            "required": true,
+            "schema": {
+              "title": "X-Access-Token",
+              "type": "string"
+            },
+            "name": "X-Access-Token",
+            "in": "header"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {},
+                "examples": {
+                  "report-200": {
+                    "value": {
+                      "package_id": "com.example",
+                      "report": {
+                        "report_id": "com.example",
+                        "results_issues": {
+                          "assets": [
+                            {
+                              "matches": [
+                                {
+                                  "filename": "resources/res/xml/config.xml",
+                                  "is_tpl": false,
+                                  "spans": [
+                                    {
+                                      "preview": "http://cordova.apache.org/ns/1.0",
+                                      "span": [
+                                        58,
+                                        90
+                                      ]
+                                    }
+                                  ],
+                                  "uuid": "d971288e-1b56-4221-858e-56c0a5278468"
+                                },
+                                {
+                                  "filename": "resources/assets/www/About us.html",
+                                  "is_tpl": false,
+                                  "spans": [
+                                    {
+                                      "preview": "https://fonts.googleapis.com/css?family=Quicksand:400,700",
+                                      "span": [
+                                        204,
+                                        261
+                                      ]
+                                    }
+                                  ],
+                                  "uuid": "42ee6d12-38d0-4a45-a99e-6c3ec80719c8"
+                                },
+                                {
+                                  "filename": "resources/assets/www/About us.html",
+                                  "is_tpl": false,
+                                  "spans": [
+                                    {
+                                      "preview": "http://fontawesome.io/assets/font-awesome/css/font-awesome.css",
+                                      "span": [
+                                        297,
+                                        359
+                                      ]
+                                    }
+                                  ],
+                                  "uuid": "7512f6a8-ce7b-4b32-83ad-5633bd72b188"
+                                },
+                                {
+                                  "filename": "sources/org/apache/cordova/PluginManager.java",
+                                  "is_tpl": true,
+                                  "spans": [
+                                    {
+                                      "preview": "https://ssl.gstatic.com/accessibility/javascript/android/",
+                                      "span": [
+                                        7357,
+                                        7414
+                                      ]
+                                    }
+                                  ],
+                                  "uuid": "d143f083-0b7d-414f-b67a-b5c0817fdc47"
+                                }
+                              ],
+                              "type": "url",
+                              "issue_info": {
+                                "label": "URL",
+                                "cwe_id": "200",
+                                "cwe_name": "Exposure of Sensitive Information to an Unauthorized Actor",
+                                "severity": "low",
+                                "cvss_score": 0,
+                                "description": "Asset detected",
+                                "reference": "https://github.com/OWASP/owasp-mstg/blob/master/Document/0x05c-Reverse-Engineering-and-Tampering.md",
+                                "mitigation": "Avoid exposing multiple endpoints and limit the number of accessible ports and services required to run the application."
+                              }
+                            },
+                            {
+                              "matches": [
+                                {
+                                  "filename": "resources/res/xml/config.xml",
+                                  "is_tpl": false,
+                                  "spans": [
+                                    {
+                                      "preview": "videolist.html",
+                                      "span": [
+                                        581,
+                                        595
+                                      ]
+                                    }
+                                  ],
+                                  "uuid": "f3ad4356-cf03-428a-be7f-99f68e3aab54"
+                                },
+                                {
+                                  "filename": "resources/assets/www/contact_us.html",
+                                  "is_tpl": false,
+                                  "spans": [
+                                    {
+                                      "preview": "videolist.html",
+                                      "span": [
+                                        10233,
+                                        10247
+                                      ]
+                                    }
+                                  ],
+                                  "uuid": "2bcae68c-0b7c-46e8-bd42-d8c3cdb19887"
+                                },
+                                {
+                                  "filename": "resources/assets/www/About us.html",
+                                  "is_tpl": false,
+                                  "spans": [
+                                    {
+                                      "preview": "videolist.html",
+                                      "span": [
+                                        1059,
+                                        1073
+                                      ]
+                                    }
+                                  ],
+                                  "uuid": "864ceef2-8eb7-4a86-84d5-18e58f40fa30"
+                                },
+                                {
+                                  "filename": "resources/assets/www/About us.html",
+                                  "is_tpl": false,
+                                  "spans": [
+                                    {
+                                      "preview": "contact_us.html",
+                                      "span": [
+                                        1272,
+                                        1287
+                                      ]
+                                    }
+                                  ],
+                                  "uuid": "cead936c-9d35-41d8-a146-b41705bd4f61"
+                                },
+                                {
+                                  "filename": "resources/assets/www/About us.html",
+                                  "is_tpl": false,
+                                  "spans": [
+                                    {
+                                      "preview": "videolist.html",
+                                      "span": [
+                                        3999,
+                                        4013
+                                      ]
+                                    }
+                                  ],
+                                  "uuid": "7cb834c9-8808-47c4-be03-0951eaafad40"
+                                }
+                              ],
+                              "type": "filename",
+                              "issue_info": {
+                                "label": "File name",
+                                "cwe_id": "200",
+                                "cwe_name": "Exposure of Sensitive Information to an Unauthorized Actor",
+                                "severity": "low",
+                                "cvss_score": 0,
+                                "description": "Asset detected",
+                                "reference": "https://github.com/OWASP/owasp-mstg/blob/master/Document/0x05c-Reverse-Engineering-and-Tampering.md",
+                                "mitigation": "Avoid exposing multiple endpoints and limit the number of accessible ports and services required to run the application."
+                              }
+                            },
+                            {
+                              "matches": [
+                                {
+                                  "filename": "resources/res/xml/config.xml",
+                                  "is_tpl": false,
+                                  "spans": [
+                                    {
+                                      "preview": "cordova.apache.org",
+                                      "span": [
+                                        58,
+                                        90
+                                      ]
+                                    }
+                                  ],
+                                  "uuid": "a1e6dff6-42bb-42d8-99ca-9012b8bc722c"
+                                },
+                                {
+                                  "filename": "sources/org/apache/cordova/PluginManager.java",
+                                  "is_tpl": true,
+                                  "spans": [
+                                    {
+                                      "preview": "ssl.gstatic.com",
+                                      "span": [
+                                        7357,
+                                        7414
+                                      ]
+                                    }
+                                  ],
+                                  "uuid": "c3dc63a2-2873-475c-bdcc-288ca8c6f042"
+                                }
+                              ],
+                              "type": "host",
+                              "issue_info": {
+                                "label": "Hostname",
+                                "cwe_id": "200",
+                                "cwe_name": "Exposure of Sensitive Information to an Unauthorized Actor",
+                                "severity": "low",
+                                "cvss_score": 0,
+                                "description": "Asset detected",
+                                "reference": "https://github.com/OWASP/owasp-mstg/blob/master/Document/0x05c-Reverse-Engineering-and-Tampering.md",
+                                "mitigation": "Avoid exposing multiple endpoints and limit the number of accessible ports and services required to run the application."
+                              }
+                            },
+                            {
+                              "matches": [
+                                {
+                                  "filename": "resources/assets/www/cordova_plugins.js",
+                                  "is_tpl": false,
+                                  "spans": [
+                                    {
+                                      "preview": "plugins/cordova-plugin-splashscreen/www/splashscreen.js",
+                                      "span": [
+                                        175,
+                                        230
+                                      ]
+                                    }
+                                  ],
+                                  "uuid": "be028013-4982-453e-90c0-b97e44c1bbc0"
+                                },
+                                {
+                                  "filename": "resources/assets/www/cordova_plugins.js",
+                                  "is_tpl": false,
+                                  "spans": [
+                                    {
+                                      "preview": "plugins/es6-promise-plugin/www/promise.js",
+                                      "span": [
+                                        427,
+                                        468
+                                      ]
+                                    }
+                                  ],
+                                  "uuid": "9d1abc89-d90a-4295-a00f-96c5eab133f2"
+                                },
+                                {
+                                  "filename": "resources/assets/www/cordova_plugins.js",
+                                  "is_tpl": false,
+                                  "spans": [
+                                    {
+                                      "preview": "plugins/cordova-plugin-x-socialsharing/www/SocialSharing.js",
+                                      "span": [
+                                        626,
+                                        685
+                                      ]
+                                    }
+                                  ],
+                                  "uuid": "1e833e03-0d17-4343-af74-6875f8d0ae39"
+                                },
+                                {
+                                  "filename": "resources/assets/www/cordova_plugins.js",
+                                  "is_tpl": false,
+                                  "spans": [
+                                    {
+                                      "preview": "plugins/cordova-plugin-network-information/www/network.js",
+                                      "span": [
+                                        907,
+                                        964
+                                      ]
+                                    }
+                                  ],
+                                  "uuid": "fda522ca-bbd3-48dd-b0e4-ad481e428738"
+                                },
+                                {
+                                  "filename": "resources/assets/www/cordova_plugins.js",
+                                  "is_tpl": false,
+                                  "spans": [
+                                    {
+                                      "preview": "plugins/cordova-plugin-network-information/www/Connection.js",
+                                      "span": [
+                                        1229,
+                                        1289
+                                      ]
+                                    }
+                                  ],
+                                  "uuid": "3db215ac-091d-4e2f-a849-b2d00bae3256"
+                                }
+                              ],
+                              "type": "relative_endpoint",
+                              "issue_info": {
+                                "label": "Relative Endpoint",
+                                "cwe_id": "200",
+                                "cwe_name": "Exposure of Sensitive Information to an Unauthorized Actor",
+                                "severity": "low",
+                                "cvss_score": 0,
+                                "description": "Asset detected",
+                                "reference": "https://github.com/OWASP/owasp-mstg/blob/master/Document/0x05c-Reverse-Engineering-and-Tampering.md",
+                                "mitigation": "Avoid exposing multiple endpoints and limit the number of accessible ports and services required to run the application."
+                              }
+                            },
+                            {
+                              "matches": [
+                                {
+                                  "filename": "resources/assets/www/cordova.js",
+                                  "is_tpl": false,
+                                  "spans": [
+                                    {
+                                      "preview": "cordova/android/nativeapiprovider",
+                                      "span": [
+                                        11275,
+                                        11308
+                                      ]
+                                    }
+                                  ],
+                                  "uuid": "5dfeaa94-9c80-41dd-97f4-ce3e15e8d3eb"
+                                },
+                                {
+                                  "filename": "sources/org/apache/cordova/NativeToJsMessageQueue.java",
+                                  "is_tpl": true,
+                                  "spans": [
+                                    {
+                                      "preview": "cordova/plugin/android/polling",
+                                      "span": [
+                                        5149,
+                                        5179
+                                      ]
+                                    }
+                                  ],
+                                  "uuid": "c81f578c-b816-4b50-b063-f9b1d52f3956"
+                                }
+                              ],
+                              "type": "rest_api",
+                              "issue_info": {
+                                "label": "REST API",
+                                "cwe_id": "200",
+                                "cwe_name": "Exposure of Sensitive Information to an Unauthorized Actor",
+                                "severity": "low",
+                                "cvss_score": 0,
+                                "description": "Asset detected",
+                                "reference": "https://github.com/OWASP/owasp-mstg/blob/master/Document/0x05c-Reverse-Engineering-and-Tampering.md",
+                                "mitigation": "Avoid exposing multiple endpoints and limit the number of accessible ports and services required to run the application."
+                              }
+                            }
+                          ],
+                          "manifest": [],
+                          "secrets": [
+                            {
+                              "matches": [
+                                {
+                                  "confidence_score": 0,
+                                  "filename": "resources/assets/www/js/jquery-1.11.2.min.js",
+                                  "is_tpl": false,
+                                  "spans": [
+                                    {
+                                      "preview": "clsid:D27CDB6E-AE6D-11cf-96B8-444553540000",
+                                      "span": [
+                                        33086,
+                                        33130
+                                      ]
+                                    }
+                                  ],
+                                  "uuid": "635dddc3-b930-4f1c-98b3-3b4ca1d47cdc"
+                                },
+                                {
+                                  "confidence_score": 0,
+                                  "filename": "resources/assets/www/js/jquery.min.js",
+                                  "is_tpl": false,
+                                  "spans": [
+                                    {
+                                      "preview": "clsid:D27CDB6E-AE6D-11cf-96B8-444553540000",
+                                      "span": [
+                                        33137,
+                                        33181
+                                      ]
+                                    }
+                                  ],
+                                  "uuid": "daaa8df8-d9b7-4909-8c5a-60d7b9e2a5ea"
+                                }
+                              ],
+                              "type": "Possible UUID",
+                              "issue_info": {
+                                "label": "Possible UUID",
+                                "severity": "low",
+                                "cvss_score": 0,
+                                "description": "Random string detected"
+                              }
+                            }
+                          ],
+                          "vuln": [
+                            {
+                              "matches": [
+                                {
+                                  "filename": "sources/org/apache/cordova/engine/SystemWebViewClient.java",
+                                  "is_tpl": true,
+                                  "spans": [
+                                    {
+                                      "preview": "onReceivedSslError(WebView view, SslErrorHandler handler, SslError error)",
+                                      "span": [
+                                        4427,
+                                        4500
+                                      ]
+                                    },
+                                    {
+                                      "preview": ".proceed();",
+                                      "span": [
+                                        4718,
+                                        4729
+                                      ]
+                                    }
+                                  ],
+                                  "uuid": "69423089-5524-4b45-971e-0da429a37f39"
+                                }
+                              ],
+                              "type": "WebView ignores SSL errors",
+                              "issue_info": {
+                                "label": "WebView ignores SSL errors",
+                                "cwe_id": "295",
+                                "cwe_name": "Improper Certificate Validation",
+                                "severity": "high",
+                                "cvss_score": 5.9,
+                                "description": "Your application has an unsafe implementation of the WebViewClient.onReceivedSslError handler. Specifically, the implementation ignores all SSL certificate validation errors, making your app vulnerable to man-in-the-middle attacks. An attacker could change the affected WebView's content, read transmitted data (such as login credentials), and execute code inside the app using JavaScript.",
+                                "reference": "http://www.skynetcomputing.com.au/android/ignoring-ssl-certificate-when-debugging-in-android-webview/",
+                                "mitigation": "Do not ignore SSL errors as it allows MITM attacks.To properly handle SSL certificate validation, change your code to invoke SslErrorHandler.proceed() whenever the certificate presented by the server meets your expectations, and invoke SslErrorHandler.cancel() otherwise. "
+                              }
+                            },
+                            {
+                              "matches": [
+                                {
+                                  "filename": "sources/org/apache/cordova/engine/SystemWebViewEngine.java",
+                                  "is_tpl": true,
+                                  "spans": [
+                                    {
+                                      "preview": ".setWebContentsDebuggingEnabled(true)",
+                                      "span": [
+                                        8117,
+                                        8154
+                                      ]
+                                    },
+                                    {
+                                      "preview": "WebView",
+                                      "span": [
+                                        8391,
+                                        8398
+                                      ]
+                                    }
+                                  ],
+                                  "uuid": "63645f8f-597c-458f-b091-51af72d4f880"
+                                }
+                              ],
+                              "type": "Remote WebView debugging enabled",
+                              "issue_info": {
+                                "label": "Remote WebView debugging enabled",
+                                "cwe_id": "919",
+                                "cwe_name": "Weaknesses in Mobile Applications",
+                                "severity": "medium",
+                                "cvss_score": 5.4,
+                                "description": "Leaving WebView debugging enabled in production can allow an attacker to access the app's sensitive data.",
+                                "reference": "https://github.com/OWASP/owasp-mstg/blob/master/Document/0x04c-Tampering-and-Reverse-Engineering.md#debugging-and-tracing",
+                                "mitigation": "Do not leave debugging enabled in the production code."
+                              }
+                            }
+                          ]
+                        },
+                        "results_metadata": {
+                          "apkid": [
+                            {
+                              "data": [
+                                {
+                                  "info": [
+                                    "dx (possible dexmerge)"
+                                  ],
+                                  "subtitle": "compiler"
+                                },
+                                {
+                                  "info": [
+                                    "dexmerge"
+                                  ],
+                                  "subtitle": "manipulator"
+                                },
+                                {
+                                  "info": [
+                                    "Debug.isDebuggerConnected() check"
+                                  ],
+                                  "subtitle": "anti_debug"
+                                },
+                                {
+                                  "info": [
+                                    "Build.MANUFACTURER check"
+                                  ],
+                                  "subtitle": "anti_vm"
+                                }
+                              ],
+                              "file": "classes.dex"
+                            }
+                          ],
+                          "certificate": {
+                            "certificate_findings": [
+                              {
+                                "description": "APK is signed with a code signing certificate",
+                                "status": "good"
+                              },
+                              {
+                                "description": "APK is signed with v1 signature (vulnerable to Janus vulnerability on Android 6.0 and below)",
+                                "status": "warning"
+                              }
+                            ],
+                            "certificate_info": {
+                              "apk_signed": true,
+                              "cert_count": 1,
+                              "cert_list": [
+                                {
+                                  "Hash Algorithm": "sha256",
+                                  "Issuer": "C=US, ST=California, L=Mountain View, O=Google Inc., OU=Android, CN=Android",
+                                  "Serial Number": "0x835481b5024c9e22c10901e74fa8a7a1d5e36315",
+                                  "Signature Algorithm": "rsassa_pkcs1v15",
+                                  "Subject": "C=US, ST=California, L=Mountain View, O=Google Inc., OU=Android, CN=Android",
+                                  "Valid From": "2017-06-29 10:03:23+00:00",
+                                  "Valid To": "2047-06-29 10:03:23+00:00",
+                                  "sha1": "af1edb52e8917c2e74fc5e6230d74ed0b854bc31",
+                                  "sha256": "a1fd71fe237f695aa08f93b261909949581b45235e19a273a0ad847fa7926dd1"
+                                }
+                              ],
+                              "pub_keys": [
+                                {
+                                  "Bit Size": "4096",
+                                  "Fingerprint": "71a6a73742c6f926f695c8e4a01539076c68297d700d043c2ebb17e6350a51db",
+                                  "PublicKey Algorithm": "rsa"
+                                }
+                              ],
+                              "v1_signature": true,
+                              "v2_signature": true,
+                              "v3_signature": false
+                            },
+                            "hardcoded_keys": {}
+                          },
+                          "third_party_libs": [
+                            {
+                              "name": "Android Support v4",
+                              "info": {
+                                "category": "Development Framework",
+                                "url": "https://developer.android.com/reference/android/support/v4/app/package-summary.html",
+                                "logo": "fe70bfac1a330411684f6c82ed8790b3.png"
+                              }
+                            },
+                            {
+                              "name": "Cordova Social Sharing plugin",
+                              "info": {
+                                "category": "Social Network",
+                                "url": "https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin",
+                                "logo": "191ff27ff4e3d4ff7287f34ad6b07223.png"
+                              }
+                            },
+                            {
+                              "name": "Apache Cordova",
+                              "info": {
+                                "category": "Development Framework",
+                                "url": "https://cordova.apache.org/",
+                                "logo": "a6e64a6b7a6ab11bd86dbac1b766f3d5.png"
+                              }
+                            }
+                          ],
+                          "trackers": []
+                        },
+                        "report_summary": {
+                          "issues_per_scanner_counts": {
+                            "assets": {
+                              "total": 76,
+                              "high": 0,
+                              "medium": 0,
+                              "low": 76,
+                              "Resiliency": 0
+                            },
+                            "manifest": {
+                              "total": 0,
+                              "high": 0,
+                              "medium": 0,
+                              "low": 0,
+                              "Resiliency": 0
+                            },
+                            "secrets": {
+                              "total": 2,
+                              "high": 0,
+                              "medium": 0,
+                              "low": 2,
+                              "Resiliency": 0
+                            },
+                            "vuln": {
+                              "total": 4,
+                              "high": 2,
+                              "medium": 2,
+                              "low": 0,
+                              "Resiliency": 0
+                            }
+                          },
+                          "issues_summary": {
+                            "assets": [
+                              {
+                                "issue_name": "url",
+                                "matches_count": 16,
+                                "cvss_score": "0.0"
+                              },
+                              {
+                                "issue_name": "filename",
+                                "matches_count": 13,
+                                "cvss_score": "0.0"
+                              },
+                              {
+                                "issue_name": "host",
+                                "matches_count": 14,
+                                "cvss_score": "0.0"
+                              },
+                              {
+                                "issue_name": "relative_endpoint",
+                                "matches_count": 5,
+                                "cvss_score": "0.0"
+                              },
+                              {
+                                "issue_name": "rest_api",
+                                "matches_count": 13,
+                                "cvss_score": "0.0"
+                              },
+                              {
+                                "issue_name": "file_path",
+                                "matches_count": 11,
+                                "cvss_score": "0.0"
+                              },
+                              {
+                                "issue_name": "email",
+                                "matches_count": 4,
+                                "cvss_score": "0.0"
+                              }
+                            ],
+                            "manifest": [],
+                            "secrets": [
+                              {
+                                "issue_name": "Possible UUID",
+                                "matches_count": 2,
+                                "cvss_score": "0.0"
+                              }
+                            ],
+                            "vuln": [
+                              {
+                                "issue_name": "WebView ignores SSL errors",
+                                "matches_count": 1,
+                                "cvss_score": "5.9"
+                              },
+                              {
+                                "issue_name": "Remote WebView debugging enabled",
+                                "matches_count": 1,
+                                "cvss_score": "5.4"
+                              },
+                              {
+                                "issue_name": "WebView javascript enabled",
+                                "matches_count": 1,
+                                "cvss_score": "6.5"
+                              },
+                              {
+                                "issue_name": "WebView javascript and file access enabled",
+                                "matches_count": 1,
+                                "cvss_score": "6.8"
+                              }
+                            ]
+                          },
+                          "metadata_counts": {
+                            "apkids": 1,
+                            "malware": 0,
+                            "third_party_libs": 3,
+                            "trackers": 0
+                          }
+                        },
+                        "severity_rating": {
+                          "severity_grade": "E",
+                          "severity_score": 9.5
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "wordlist-400": {
+                    "value": "{\"detail\":\"Bad Request\"}"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "wordlist-401": {
+                    "value": "{\"detail\":\"Access Token Invalid\"}"
+                  }
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment Required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "wordlist-402": {
+                    "value": "{\"detail\":\"No Credits left. Purchase new credits\"}"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "wordlist-422": {
+                    "value": "{\"detail\":\"Slow down! Rate limit exceeded\"}"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AppResponse": {
+        "title": "AppResponse",
+        "required": [
+          "package_id"
+        ],
+        "type": "object",
+        "properties": {
+          "package_id": {
+            "title": "Package Id",
+            "type": "string"
+          },
+          "app_name": {
+            "title": "App Name",
+            "type": "string",
+            "default": "NA"
+          },
+          "app_version": {
+            "title": "App Version",
+            "type": "string"
+          }
+        }
+      },
+      "Asset": {
+        "title": "Asset",
+        "required": [
+          "package_id",
+          "host"
+        ],
+        "type": "object",
+        "properties": {
+          "package_id": {
+            "title": "Package Id",
+            "type": "string"
+          },
+          "host": {
+            "title": "Host",
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {}
+            }
+          }
+        }
+      },
+      "ErrorResponse": {
+        "title": "ErrorResponse",
+        "required": [
+          "detail"
+        ],
+        "type": "object",
+        "properties": {
+          "detail": {
+            "title": "Detail",
+            "type": "string"
+          }
+        }
+      },
+      "GetApps": {
+        "title": "GetApps",
+        "required": [
+          "packages"
+        ],
+        "type": "object",
+        "properties": {
+          "packages": {
+            "title": "Packages",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AppResponse"
+            }
+          }
+        }
+      },
+      "Hosts": {
+        "title": "Hosts",
+        "required": [
+          "package_id",
+          "hosts"
+        ],
+        "type": "object",
+        "properties": {
+          "package_id": {
+            "title": "Package Id",
+            "type": "string"
+          },
+          "hosts": {
+            "title": "Hosts",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "S3Buckets": {
+        "title": "S3Buckets",
+        "required": [
+          "package_id",
+          "s3_buckets"
+        ],
+        "type": "object",
+        "properties": {
+          "package_id": {
+            "title": "Package Id",
+            "type": "string"
+          },
+          "s3_buckets": {
+            "title": "S3 Buckets",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "S3BucketsKeyword": {
+        "title": "S3BucketsKeyword",
+        "required": [
+          "keyword",
+          "s3_buckets"
+        ],
+        "type": "object",
+        "properties": {
+          "keyword": {
+            "title": "Keyword",
+            "type": "string"
+          },
+          "s3_buckets": {
+            "title": "S3 Buckets",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "Subdomains": {
+        "title": "Subdomains",
+        "required": [
+          "domain",
+          "subdomains"
+        ],
+        "type": "object",
+        "properties": {
+          "domain": {
+            "title": "Domain",
+            "type": "string"
+          },
+          "subdomains": {
+            "title": "Subdomains",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "URLParams": {
+        "title": "URLParams",
+        "required": [
+          "package_id",
+          "url_params"
+        ],
+        "type": "object",
+        "properties": {
+          "package_id": {
+            "title": "Package Id",
+            "type": "string"
+          },
+          "url_params": {
+            "title": "Url Params",
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {}
+            }
+          }
+        }
+      },
+      "URLs": {
+        "title": "URLs",
+        "required": [
+          "domain",
+          "urls"
+        ],
+        "type": "object",
+        "properties": {
+          "domain": {
+            "title": "Domain",
+            "type": "string"
+          },
+          "urls": {
+            "title": "Urls",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "Wordlist": {
+        "title": "Wordlist",
+        "required": [
+          "package_id",
+          "raw_wordlist",
+          "wordlist"
+        ],
+        "type": "object",
+        "properties": {
+          "package_id": {
+            "title": "Package Id",
+            "type": "string"
+          },
+          "raw_wordlist": {
+            "title": "Raw Wordlist",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "wordlist": {
+            "title": "Wordlist",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}
