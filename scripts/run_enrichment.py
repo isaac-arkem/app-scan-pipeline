@@ -26,6 +26,7 @@ from src.config import config
 from src.supabase_client import SupabaseClient
 from src.bevigil_client import BeVigilClient
 from src.enrichment_service import EnrichmentService
+from src.playstore_client import PlayStoreClient
 
 
 console = Console()
@@ -187,14 +188,68 @@ def main(
 
         console.print(f"\n[bold]Scanning {len(scan)} app(s) by bundle ID...[/bold]")
         apps = []
+        playstore = PlayStoreClient()
+        
         for i, bid in enumerate(scan):
             bid = bid.strip()
             if not bid:
                 continue
-            # Only apply name to the first (and only) app when --name is provided
-            app_name_to_use = name if (name and i == 0) else None
+            
             console.print(f"  Resolving: {bid}")
-            app = supabase.get_or_create_app(bid, platform="Android", app_name=app_name_to_use)
+            
+            # Check if app already exists with metadata
+            existing_app = supabase.get_app_by_bundle_id(bid)
+            
+            if existing_app and existing_app.app_name:
+                # App exists with metadata, use it directly
+                console.print(f"    [green]✓[/green] App ID: {existing_app.id} ({existing_app.app_name})")
+                apps.append(existing_app)
+                continue
+            
+            # Use provided name or fetch from Google Play
+            app_name_to_use = name if (name and i == 0) else None
+            developer_name = None
+            category = None
+            version = None
+            release_date = None
+            metadata = None
+            
+            # Only fetch from Play Store if we don't have a name and app is missing metadata
+            if not app_name_to_use:
+                console.print(f"    Fetching metadata from Google Play...")
+                play_metadata = playstore.get_app_metadata(bid)
+                if play_metadata and play_metadata.app_name:
+                    app_name_to_use = play_metadata.app_name
+                    developer_name = play_metadata.developer_name
+                    category = play_metadata.category
+                    version = play_metadata.version
+                    release_date = play_metadata.released
+                    # Store additional info in metadata JSONB
+                    metadata = {}
+                    if play_metadata.description:
+                        metadata["description"] = play_metadata.description[:500]  # Truncate
+                    if play_metadata.icon_url:
+                        metadata["icon_url"] = play_metadata.icon_url
+                    if play_metadata.rating:
+                        metadata["rating"] = play_metadata.rating
+                    if play_metadata.installs:
+                        metadata["installs"] = play_metadata.installs
+                    if play_metadata.updated:
+                        metadata["last_updated"] = play_metadata.updated
+                    console.print(f"    [cyan]Found: {app_name_to_use} by {developer_name}[/cyan]")
+                else:
+                    console.print(f"    [yellow]Not found on Google Play[/yellow]")
+            
+            app = supabase.get_or_create_app(
+                bid,
+                platform="Android",
+                app_name=app_name_to_use,
+                developer_name=developer_name,
+                category=category,
+                version=version,
+                release_date=release_date,
+                metadata=metadata if metadata else None,
+            )
             apps.append(app)
             name_display = f" ({app.app_name})" if app.app_name else ""
             console.print(f"    [green]✓[/green] App ID: {app.id}{name_display}")
@@ -256,10 +311,9 @@ def _display_stats(stats):
     table.add_row("Processing", f"[blue]{stats.processing}[/blue]")
     table.add_row("Failed", f"[red]{stats.failed}[/red]")
     table.add_row("Not Found", f"[dim]{stats.not_found}[/dim]")
-    table.add_row("No Data", f"[dim]{stats.no_data}[/dim]")
     table.add_row("No Credits", f"[red]{stats.no_credits}[/red]")
 
-    remaining = stats.total_android_apps - stats.completed - stats.not_found - stats.no_data - stats.no_credits
+    remaining = stats.total_android_apps - stats.completed - stats.not_found - stats.no_credits
     table.add_row("─" * 20, "─" * 10)
     table.add_row("Remaining to Process", f"[bold]{remaining}[/bold]")
 
@@ -305,7 +359,6 @@ def _run_enrichment(apps, supabase: SupabaseClient, debug: bool = False):
     results = {
         "completed": 0,
         "not_found": 0,
-        "no_data": 0,
         "failed": 0,
         "no_credits": 0,
     }
@@ -339,9 +392,6 @@ def _run_enrichment(apps, supabase: SupabaseClient, debug: bool = False):
                 elif status == "not_found":
                     results["not_found"] += 1
                     progress.console.print(f"  [yellow]⊘ Not found in BeVigil[/yellow]")
-                elif status == "no_data":
-                    results["no_data"] += 1
-                    progress.console.print(f"  [yellow]⊘ No data returned by BeVigil[/yellow]")
                 elif status == "no_credits":
                     results["no_credits"] += 1
                     progress.console.print(f"  [red]✗ No credits remaining - stopping[/red]")
@@ -377,7 +427,6 @@ def _display_results(results: dict):
     panel_content = f"""
 [green]Completed:[/green] {results['completed']}
 [yellow]Not Found:[/yellow] {results['not_found']}
-[yellow]No Data:[/yellow] {results['no_data']}
 [red]Failed:[/red] {results['failed']}
 [red]No Credits:[/red] {results['no_credits']}
 

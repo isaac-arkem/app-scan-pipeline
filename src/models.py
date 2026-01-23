@@ -14,6 +14,9 @@ class App(BaseModel):
     app_name: Optional[str] = None
     developer_name: Optional[str] = None
     category: Optional[str] = None
+    version: Optional[str] = None
+    release_date: Optional[str] = None
+    metadata: Optional[dict] = None
 
 
 class EnrichmentRecord(BaseModel):
@@ -132,5 +135,4 @@ class EnrichmentStats(BaseModel):
     completed: int = 0
     failed: int = 0
     not_found: int = 0
-    no_data: int = 0
     no_credits: int = 0

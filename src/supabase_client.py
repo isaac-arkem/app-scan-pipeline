@@ -52,7 +52,7 @@ class SupabaseClient:
         # Build the query for Android apps
         query = (
             self._client.table("apps")
-            .select("id, bundle_id, platform, app_name, developer_name, category")
+            .select("id, bundle_id, platform, app_name, developer_name, category, version, metadata")
             .eq("platform", "Android")
         )
 
@@ -77,7 +77,7 @@ class SupabaseClient:
         enrichment_result = enrichment_query.execute()
 
         # Build set of app_ids to exclude
-        exclude_statuses = {"completed", "not_found", "no_data", "no_credits"}
+        exclude_statuses = {"completed", "not_found", "no_credits"}
         if not include_failed:
             exclude_statuses.add("failed")
 
@@ -203,7 +203,6 @@ class SupabaseClient:
             "completed": 0,
             "failed": 0,
             "not_found": 0,
-            "no_data": 0,
             "no_credits": 0,
         }
 
@@ -255,7 +254,7 @@ class SupabaseClient:
         """Get an app by its bundle ID."""
         result = (
             self._client.table("apps")
-            .select("id, bundle_id, platform, app_name, developer_name, category")
+            .select("id, bundle_id, platform, app_name, developer_name, category, version, release_date, metadata")
             .eq("bundle_id", bundle_id)
             .execute()
         )
@@ -268,11 +267,26 @@ class SupabaseClient:
         bundle_id: str,
         platform: str = "Android",
         app_name: Optional[str] = None,
+        developer_name: Optional[str] = None,
+        category: Optional[str] = None,
+        version: Optional[str] = None,
+        release_date: Optional[str] = None,
+        metadata: Optional[dict] = None,
     ) -> App:
         """Create a new app record and return it."""
         data = {"bundle_id": bundle_id, "platform": platform}
         if app_name:
             data["app_name"] = app_name
+        if developer_name:
+            data["developer_name"] = developer_name
+        if category:
+            data["category"] = category
+        if version:
+            data["version"] = version
+        if release_date:
+            data["release_date"] = release_date
+        if metadata:
+            data["metadata"] = metadata
         result = (
             self._client.table("apps")
             .insert(data)
@@ -280,20 +294,64 @@ class SupabaseClient:
         )
         return App(**result.data[0])
 
+    def update_app_metadata(
+        self,
+        app_id: int,
+        app_name: Optional[str] = None,
+        developer_name: Optional[str] = None,
+        category: Optional[str] = None,
+        version: Optional[str] = None,
+        metadata: Optional[dict] = None,
+    ) -> None:
+        """Update app metadata fields (only updates fields that are provided)."""
+        data = {}
+        if app_name:
+            data["app_name"] = app_name
+        if developer_name:
+            data["developer_name"] = developer_name
+        if category:
+            data["category"] = category
+        if version:
+            data["version"] = version
+        if metadata:
+            data["metadata"] = metadata
+        
+        if data:
+            self._client.table("apps").update(data).eq("id", app_id).execute()
+
     def get_or_create_app(
         self,
         bundle_id: str,
         platform: str = "Android",
         app_name: Optional[str] = None,
+        developer_name: Optional[str] = None,
+        category: Optional[str] = None,
+        version: Optional[str] = None,
+        release_date: Optional[str] = None,
+        metadata: Optional[dict] = None,
     ) -> App:
-        """Get an existing app or create a new one."""
+        """Get an existing app or create a new one. Updates missing metadata if app exists."""
         app = self.get_app_by_bundle_id(bundle_id)
         if app:
-            # Update app name if provided and currently missing
+            # Only update fields that are provided AND currently missing
+            updates = {}
             if app_name and not app.app_name:
-                self._client.table("apps").update(
-                    {"app_name": app_name}
-                ).eq("id", app.id).execute()
-                app.app_name = app_name
+                updates["app_name"] = app_name
+            if developer_name and not app.developer_name:
+                updates["developer_name"] = developer_name
+            if category and not app.category:
+                updates["category"] = category
+            if version and not app.version:
+                updates["version"] = version
+            if release_date and not app.release_date:
+                updates["release_date"] = release_date
+            if metadata and not app.metadata:
+                updates["metadata"] = metadata
+            
+            if updates:
+                self._client.table("apps").update(updates).eq("id", app.id).execute()
+                # Update local object
+                for key, value in updates.items():
+                    setattr(app, key, value)
             return app
-        return self.create_app(bundle_id, platform, app_name)
+        return self.create_app(bundle_id, platform, app_name, developer_name, category, version, release_date, metadata)

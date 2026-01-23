@@ -123,8 +123,8 @@ class EnrichmentService:
                 enrichment_record.enrichment_status = "completed"
                 final_status = "completed"
             else:
-                enrichment_record.enrichment_status = "no_data"
-                final_status = "no_data"
+                enrichment_record.enrichment_status = "not_found"
+                final_status = "not_found"
                 log(f"Warning: BeVigil returned no meaningful data for {bundle_id}")
 
             # Upsert the enrichment record
