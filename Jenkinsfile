@@ -1,38 +1,8 @@
 pipeline {
     agent any
     
-    parameters {
-        password(
-            name: 'BEVIGIL_API_KEY',
-            defaultValue: '',
-            description: 'BeVigil API Key'
-        )
-        password(
-            name: 'SUPABASE_URL',
-            defaultValue: '',
-            description: 'Supabase URL'
-        )
-        password(
-            name: 'SUPABASE_SERVICE_KEY',
-            defaultValue: '',
-            description: 'Supabase Service Key'
-        )
-        string(
-            name: 'BUNDLE_IDS',
-            defaultValue: '',
-            description: 'Comma-separated list of Android bundle IDs to scan (e.g., com.whatsapp,com.facebook.katana)'
-        )
-        string(
-            name: 'APP_NAME',
-            defaultValue: '',
-            description: 'Optional: App name (only works when scanning a single bundle ID)'
-        )
-        string(
-            name: 'LIMIT',
-            defaultValue: '',
-            description: 'Optional: Maximum number of apps to process'
-        )
-    }
+    // Parameters (BEVIGIL_API_KEY, SUPABASE_URL, SUPABASE_SERVICE_KEY, BUNDLE_IDS, APP_NAME, LIMIT)
+    // should be configured directly in Jenkins job configuration
     
     environment {
         VENV_DIR = 'venv'
