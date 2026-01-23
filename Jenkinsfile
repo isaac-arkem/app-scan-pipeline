@@ -2,10 +2,6 @@ pipeline {
     agent any
     
     environment {
-        // These should be configured in Jenkins credentials
-        BEVIGIL_API_KEY = credentials('BEVIGIL_API_KEY')
-        SUPABASE_URL = credentials('SUPABASE_URL')
-        SUPABASE_SERVICE_KEY = credentials('SUPABASE_SERVICE_KEY')
         VENV_DIR = 'venv'
     }
     
@@ -45,18 +41,24 @@ pipeline {
         
         stage('Validate') {
             steps {
-                echo 'Validating configuration...'
-                script {
-                    if (isUnix()) {
-                        sh '''
-                            . ${VENV_DIR}/bin/activate
-                            python3 -c "from src.config import config; missing = config.validate(); print('Config OK' if not missing else f'Missing: {missing}')"
-                        '''
-                    } else {
-                        bat '''
-                            call %VENV_DIR%\\Scripts\\activate.bat
-                            python -c "from src.config import config; missing = config.validate(); print('Config OK' if not missing else f'Missing: {missing}')"
-                        '''
+                withCredentials([
+                    string(credentialsId: 'BEVIGIL_API_KEY', variable: 'BEVIGIL_API_KEY'),
+                    string(credentialsId: 'SUPABASE_URL', variable: 'SUPABASE_URL'),
+                    string(credentialsId: 'SUPABASE_SERVICE_KEY', variable: 'SUPABASE_SERVICE_KEY')
+                ]) {
+                    echo 'Validating configuration...'
+                    script {
+                        if (isUnix()) {
+                            sh '''
+                                . ${VENV_DIR}/bin/activate
+                                python3 -c "from src.config import config; missing = config.validate(); print('Config OK' if not missing else f'Missing: {missing}')"
+                            '''
+                        } else {
+                            bat '''
+                                call %VENV_DIR%\\Scripts\\activate.bat
+                                python -c "from src.config import config; missing = config.validate(); print('Config OK' if not missing else f'Missing: {missing}')"
+                            '''
+                        }
                     }
                 }
             }
@@ -64,40 +66,46 @@ pipeline {
         
         stage('Run Enrichment') {
             steps {
-                script {
-                    def bundleArgs = ''
-                    def appNameArg = ''
-                    def limitArg = ''
-                    
-                    // Handle bundle IDs for direct scanning
-                    if (params.BUNDLE_IDS?.trim()) {
-                        def bundleIds = params.BUNDLE_IDS.split(',')
-                        bundleIds.each { bid ->
-                            bundleArgs += " -s ${bid.trim()}"
+                withCredentials([
+                    string(credentialsId: 'BEVIGIL_API_KEY', variable: 'BEVIGIL_API_KEY'),
+                    string(credentialsId: 'SUPABASE_URL', variable: 'SUPABASE_URL'),
+                    string(credentialsId: 'SUPABASE_SERVICE_KEY', variable: 'SUPABASE_SERVICE_KEY')
+                ]) {
+                    script {
+                        def bundleArgs = ''
+                        def appNameArg = ''
+                        def limitArg = ''
+                        
+                        // Handle bundle IDs for direct scanning
+                        if (params.BUNDLE_IDS?.trim()) {
+                            def bundleIds = params.BUNDLE_IDS.split(',')
+                            bundleIds.each { bid ->
+                                bundleArgs += " -s ${bid.trim()}"
+                            }
+                            
+                            // Add app name if provided and single bundle ID
+                            if (params.APP_NAME?.trim() && bundleIds.size() == 1) {
+                                appNameArg = " -n '${params.APP_NAME}'"
+                            }
                         }
                         
-                        // Add app name if provided and single bundle ID
-                        if (params.APP_NAME?.trim() && bundleIds.size() == 1) {
-                            appNameArg = " -n '${params.APP_NAME}'"
+                        if (params.LIMIT?.trim()) {
+                            limitArg = " -l ${params.LIMIT}"
                         }
-                    }
-                    
-                    if (params.LIMIT?.trim()) {
-                        limitArg = " -l ${params.LIMIT}"
-                    }
-                    
-                    if (isUnix()) {
-                        sh """
-                            . ${VENV_DIR}/bin/activate
-                            python3 scripts/run_enrichment.py${bundleArgs}${appNameArg}${limitArg} << EOF
+                        
+                        if (isUnix()) {
+                            sh """
+                                . ${VENV_DIR}/bin/activate
+                                python3 scripts/run_enrichment.py${bundleArgs}${appNameArg}${limitArg} << EOF
 y
 EOF
-                        """
-                    } else {
-                        bat """
-                            call %VENV_DIR%\\Scripts\\activate.bat
-                            echo y | python scripts/run_enrichment.py${bundleArgs}${appNameArg}${limitArg}
-                        """
+                            """
+                        } else {
+                            bat """
+                                call %VENV_DIR%\\Scripts\\activate.bat
+                                echo y | python scripts/run_enrichment.py${bundleArgs}${appNameArg}${limitArg}
+                            """
+                        }
                     }
                 }
             }
@@ -105,18 +113,24 @@ EOF
         
         stage('Check Status') {
             steps {
-                echo 'Checking enrichment status...'
-                script {
-                    if (isUnix()) {
-                        sh '''
-                            . ${VENV_DIR}/bin/activate
-                            python3 scripts/check_status.py
-                        '''
-                    } else {
-                        bat '''
-                            call %VENV_DIR%\\Scripts\\activate.bat
-                            python scripts/check_status.py
-                        '''
+                withCredentials([
+                    string(credentialsId: 'BEVIGIL_API_KEY', variable: 'BEVIGIL_API_KEY'),
+                    string(credentialsId: 'SUPABASE_URL', variable: 'SUPABASE_URL'),
+                    string(credentialsId: 'SUPABASE_SERVICE_KEY', variable: 'SUPABASE_SERVICE_KEY')
+                ]) {
+                    echo 'Checking enrichment status...'
+                    script {
+                        if (isUnix()) {
+                            sh '''
+                                . ${VENV_DIR}/bin/activate
+                                python3 scripts/check_status.py
+                            '''
+                        } else {
+                            bat '''
+                                call %VENV_DIR%\\Scripts\\activate.bat
+                                python scripts/check_status.py
+                            '''
+                        }
                     }
                 }
             }
