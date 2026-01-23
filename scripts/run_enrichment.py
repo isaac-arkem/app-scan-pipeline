@@ -40,12 +40,6 @@ console = Console()
     help="Bundle ID(s) to scan directly (can be used multiple times, e.g., -s com.app1 -s com.app2)"
 )
 @click.option(
-    "--name", "-n",
-    type=str,
-    default=None,
-    help="App name to use when scanning a single bundle ID (only works with --scan)"
-)
-@click.option(
     "--limit", "-l",
     type=int,
     default=None,
@@ -107,7 +101,6 @@ console = Console()
 )
 def main(
     scan: tuple,
-    name: str,
     limit: int,
     category: str,
     app_name: str,
@@ -180,17 +173,11 @@ def main(
 
     # Handle direct scan by bundle IDs
     if scan:
-        # Validate --name usage
-        if name and len(scan) > 1:
-            console.print("[red]Error: --name can only be used with a single --scan bundle ID[/red]")
-            console.print("When scanning multiple apps, omit --name or scan them separately.")
-            sys.exit(1)
-
         console.print(f"\n[bold]Scanning {len(scan)} app(s) by bundle ID...[/bold]")
         apps = []
         playstore = PlayStoreClient()
         
-        for i, bid in enumerate(scan):
+        for bid in scan:
             bid = bid.strip()
             if not bid:
                 continue
@@ -206,39 +193,38 @@ def main(
                 apps.append(existing_app)
                 continue
             
-            # Use provided name or fetch from Google Play
-            app_name_to_use = name if (name and i == 0) else None
+            # Fetch metadata from Google Play
+            console.print(f"    Fetching metadata from Google Play...")
+            play_metadata = playstore.get_app_metadata(bid)
+            
+            app_name_to_use = None
             developer_name = None
             category = None
             version = None
             release_date = None
             metadata = None
             
-            # Only fetch from Play Store if we don't have a name and app is missing metadata
-            if not app_name_to_use:
-                console.print(f"    Fetching metadata from Google Play...")
-                play_metadata = playstore.get_app_metadata(bid)
-                if play_metadata and play_metadata.app_name:
-                    app_name_to_use = play_metadata.app_name
-                    developer_name = play_metadata.developer_name
-                    category = play_metadata.category
-                    version = play_metadata.version
-                    release_date = play_metadata.released
-                    # Store additional info in metadata JSONB
-                    metadata = {}
-                    if play_metadata.description:
-                        metadata["description"] = play_metadata.description[:500]  # Truncate
-                    if play_metadata.icon_url:
-                        metadata["icon_url"] = play_metadata.icon_url
-                    if play_metadata.rating:
-                        metadata["rating"] = play_metadata.rating
-                    if play_metadata.installs:
-                        metadata["installs"] = play_metadata.installs
-                    if play_metadata.updated:
-                        metadata["last_updated"] = play_metadata.updated
-                    console.print(f"    [cyan]Found: {app_name_to_use} by {developer_name}[/cyan]")
-                else:
-                    console.print(f"    [yellow]Not found on Google Play[/yellow]")
+            if play_metadata and play_metadata.app_name:
+                app_name_to_use = play_metadata.app_name
+                developer_name = play_metadata.developer_name
+                category = play_metadata.category
+                version = play_metadata.version
+                release_date = play_metadata.released
+                # Store additional info in metadata JSONB
+                metadata = {}
+                if play_metadata.description:
+                    metadata["description"] = play_metadata.description[:500]  # Truncate
+                if play_metadata.icon_url:
+                    metadata["icon_url"] = play_metadata.icon_url
+                if play_metadata.rating:
+                    metadata["rating"] = play_metadata.rating
+                if play_metadata.installs:
+                    metadata["installs"] = play_metadata.installs
+                if play_metadata.updated:
+                    metadata["last_updated"] = play_metadata.updated
+                console.print(f"    [cyan]Found: {app_name_to_use} by {developer_name}[/cyan]")
+            else:
+                console.print(f"    [yellow]Not found on Google Play[/yellow]")
             
             app = supabase.get_or_create_app(
                 bid,

@@ -23,11 +23,6 @@ pipeline {
             description: 'Comma-separated list of Android bundle IDs to scan (e.g., com.whatsapp,com.facebook.katana)'
         )
         string(
-            name: 'APP_NAME',
-            defaultValue: '',
-            description: 'Optional: App name (only works when scanning a single bundle ID)'
-        )
-        string(
             name: 'LIMIT',
             defaultValue: '',
             description: 'Optional: Maximum number of apps to process'
@@ -103,7 +98,6 @@ pipeline {
             steps {
                 script {
                     def bundleArgs = ''
-                    def appNameArg = ''
                     def limitArg = ''
                     
                     // Handle bundle IDs for direct scanning
@@ -111,11 +105,6 @@ pipeline {
                         def bundleIds = params.BUNDLE_IDS.split(',')
                         bundleIds.each { bid ->
                             bundleArgs += " -s ${bid.trim()}"
-                        }
-                        
-                        // Add app name if provided and single bundle ID
-                        if (params.APP_NAME?.trim() && bundleIds.size() == 1) {
-                            appNameArg = " -n '${params.APP_NAME}'"
                         }
                     }
                     
@@ -126,7 +115,7 @@ pipeline {
                     if (isUnix()) {
                         sh """
                             . ${VENV_DIR}/bin/activate
-                            python3 scripts/run_enrichment.py${bundleArgs}${appNameArg}${limitArg} << EOF
+                            python3 scripts/run_enrichment.py${bundleArgs}${limitArg} << EOF
 y
 EOF
                         """
@@ -134,7 +123,7 @@ EOF
                         bat """
                             chcp 65001 > nul
                             call %VENV_DIR%\\Scripts\\activate.bat
-                            echo y | python scripts/run_enrichment.py${bundleArgs}${appNameArg}${limitArg}
+                            echo y | python scripts/run_enrichment.py${bundleArgs}${limitArg}
                         """
                     }
                 }
