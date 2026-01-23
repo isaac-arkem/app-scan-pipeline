@@ -39,6 +39,9 @@ pipeline {
         BEVIGIL_API_KEY = "${params.BEVIGIL_API_KEY}"
         SUPABASE_URL = "${params.SUPABASE_URL}"
         SUPABASE_SERVICE_KEY = "${params.SUPABASE_SERVICE_KEY}"
+        // Fix Unicode encoding issues on Windows
+        PYTHONIOENCODING = 'utf-8'
+        PYTHONUTF8 = '1'
     }
     
     stages {
@@ -60,6 +63,7 @@ pipeline {
                         '''
                     } else {
                         bat '''
+                            chcp 65001 > nul
                             if not exist "%VENV_DIR%" (
                                 echo Creating new virtual environment...
                                 python -m venv %VENV_DIR%
@@ -86,6 +90,7 @@ pipeline {
                         '''
                     } else {
                         bat '''
+                            chcp 65001 > nul
                             call %VENV_DIR%\\Scripts\\activate.bat
                             python -c "from src.config import config; missing = config.validate(); print('Config OK' if not missing else f'Missing: {missing}')"
                         '''
@@ -127,6 +132,7 @@ EOF
                         """
                     } else {
                         bat """
+                            chcp 65001 > nul
                             call %VENV_DIR%\\Scripts\\activate.bat
                             echo y | python scripts/run_enrichment.py${bundleArgs}${appNameArg}${limitArg}
                         """
@@ -146,6 +152,7 @@ EOF
                         '''
                     } else {
                         bat '''
+                            chcp 65001 > nul
                             call %VENV_DIR%\\Scripts\\activate.bat
                             python scripts/check_status.py
                         '''
