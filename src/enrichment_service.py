@@ -101,8 +101,31 @@ class EnrichmentService:
                 assets_data=assets_data,
                 report_data=report_data if report_status == ApiStatus.SUCCESS else None,
             )
-            enrichment_record.enrichment_status = "completed"
             enrichment_record.last_enriched_at = datetime.now(timezone.utc)
+
+            # Check if we got meaningful data
+            has_assets = (
+                enrichment_record.host_count > 0 or
+                enrichment_record.url_count > 0 or
+                enrichment_record.s3_bucket_count > 0 or
+                enrichment_record.firebase_url_count > 0 or
+                enrichment_record.email_count > 0 or
+                enrichment_record.ip_address_count > 0
+            )
+            has_report = (
+                enrichment_record.severity_grade is not None or
+                enrichment_record.vuln_total > 0 or
+                enrichment_record.secrets_total > 0 or
+                enrichment_record.manifest_total > 0
+            )
+
+            if has_assets or has_report:
+                enrichment_record.enrichment_status = "completed"
+                final_status = "completed"
+            else:
+                enrichment_record.enrichment_status = "no_data"
+                final_status = "no_data"
+                log(f"Warning: BeVigil returned no meaningful data for {bundle_id}")
 
             # Upsert the enrichment record
             enrichment_id = self._supabase.upsert_enrichment(enrichment_record)
@@ -118,7 +141,7 @@ class EnrichmentService:
                     log(f"Inserting {len(vulnerabilities)} vulnerability records...")
                     self._supabase.insert_vulnerabilities(vulnerabilities)
 
-            return True, "completed"
+            return True, final_status
 
         except Exception as e:
             self._supabase.update_status(app.id, "failed", str(e))
@@ -141,7 +164,7 @@ class EnrichmentService:
 
         # Extract assets
         if assets_data:
-            host_data = assets_data.get("host", {})
+            host_data = assets_data.get("host") or {}
 
             record.hosts = self._extract_list(host_data, "host")
             record.urls = self._extract_list(host_data, "url")
@@ -163,60 +186,60 @@ class EnrichmentService:
 
         # Extract report data
         if report_data:
-            report = report_data.get("report", {})
+            report = report_data.get("report") or {}
 
             # Severity rating
-            severity_rating = report.get("severity_rating", {})
+            severity_rating = report.get("severity_rating") or {}
             record.severity_grade = severity_rating.get("severity_grade")
-            record.severity_score = severity_rating.get("severity_score")
+            record.security_score = severity_rating.get("severity_score")
 
             # Issue counts
-            report_summary = report.get("report_summary", {})
-            issues_per_scanner = report_summary.get("issues_per_scanner_counts", {})
+            report_summary = report.get("report_summary") or {}
+            issues_per_scanner = report_summary.get("issues_per_scanner_counts") or {}
 
-            vuln_counts = issues_per_scanner.get("vuln", {})
-            record.vuln_total = vuln_counts.get("total", 0)
-            record.vuln_high = vuln_counts.get("high", 0)
-            record.vuln_medium = vuln_counts.get("medium", 0)
-            record.vuln_low = vuln_counts.get("low", 0)
+            vuln_counts = issues_per_scanner.get("vuln") or {}
+            record.vuln_total = vuln_counts.get("total", 0) or 0
+            record.vuln_high = vuln_counts.get("high", 0) or 0
+            record.vuln_medium = vuln_counts.get("medium", 0) or 0
+            record.vuln_low = vuln_counts.get("low", 0) or 0
 
-            secrets_counts = issues_per_scanner.get("secrets", {})
-            record.secrets_total = secrets_counts.get("total", 0)
-            record.secrets_high = secrets_counts.get("high", 0)
-            record.secrets_medium = secrets_counts.get("medium", 0)
-            record.secrets_low = secrets_counts.get("low", 0)
+            secrets_counts = issues_per_scanner.get("secrets") or {}
+            record.secrets_total = secrets_counts.get("total", 0) or 0
+            record.secrets_high = secrets_counts.get("high", 0) or 0
+            record.secrets_medium = secrets_counts.get("medium", 0) or 0
+            record.secrets_low = secrets_counts.get("low", 0) or 0
 
-            assets_counts = issues_per_scanner.get("assets", {})
-            record.assets_total = assets_counts.get("total", 0)
+            assets_counts = issues_per_scanner.get("assets") or {}
+            record.assets_total = assets_counts.get("total", 0) or 0
 
-            manifest_counts = issues_per_scanner.get("manifest", {})
-            record.manifest_total = manifest_counts.get("total", 0)
-            record.manifest_high = manifest_counts.get("high", 0)
-            record.manifest_medium = manifest_counts.get("medium", 0)
-            record.manifest_low = manifest_counts.get("low", 0)
+            manifest_counts = issues_per_scanner.get("manifest") or {}
+            record.manifest_total = manifest_counts.get("total", 0) or 0
+            record.manifest_high = manifest_counts.get("high", 0) or 0
+            record.manifest_medium = manifest_counts.get("medium", 0) or 0
+            record.manifest_low = manifest_counts.get("low", 0) or 0
 
             # Metadata
-            results_metadata = report.get("results_metadata", {})
+            results_metadata = report.get("results_metadata") or {}
 
-            third_party_libs = results_metadata.get("third_party_libs", [])
-            record.third_party_libs = [lib.get("name", "") for lib in third_party_libs if lib.get("name")]
+            third_party_libs = results_metadata.get("third_party_libs") or []
+            record.third_party_libs = [lib.get("name", "") for lib in third_party_libs if isinstance(lib, dict) and lib.get("name")]
             record.third_party_lib_count = len(record.third_party_libs)
 
-            trackers = results_metadata.get("trackers", [])
-            record.trackers = [t.get("name", "") for t in trackers if t.get("name")]
+            trackers = results_metadata.get("trackers") or []
+            record.trackers = [t.get("name", "") for t in trackers if isinstance(t, dict) and t.get("name")]
             record.tracker_count = len(record.trackers)
 
             # Certificate info
-            cert_data = results_metadata.get("certificate", {})
-            cert_info = cert_data.get("certificate_info", {})
+            cert_data = results_metadata.get("certificate") or {}
+            cert_info = cert_data.get("certificate_info") or {}
 
             record.apk_signed = cert_info.get("apk_signed")
             record.v1_signature = cert_info.get("v1_signature")
             record.v2_signature = cert_info.get("v2_signature")
             record.v3_signature = cert_info.get("v3_signature")
 
-            cert_list = cert_info.get("cert_list", [])
-            if cert_list:
+            cert_list = cert_info.get("cert_list") or []
+            if cert_list and isinstance(cert_list[0], dict):
                 cert = cert_list[0]
                 record.cert_issuer = cert.get("Issuer")
                 record.cert_subject = cert.get("Subject")
@@ -257,8 +280,8 @@ class EnrichmentService:
     ) -> list[VulnerabilityRecord]:
         """Extract vulnerability records from report data."""
         vulnerabilities = []
-        report = report_data.get("report", {})
-        results_issues = report.get("results_issues", {})
+        report = report_data.get("report") or {}
+        results_issues = report.get("results_issues") or {}
 
         # Process each category
         categories = [
@@ -268,23 +291,26 @@ class EnrichmentService:
         ]
 
         for category_key, category_name in categories:
-            issues = results_issues.get(category_key, [])
+            issues = results_issues.get(category_key) or []
 
             for issue in issues:
-                vuln_type = issue.get("type", "unknown")
-                issue_info = issue.get("issue_info", {})
-                matches = issue.get("matches", [])
+                if not isinstance(issue, dict):
+                    continue
+                vuln_type = issue.get("type", "unknown") or "unknown"
+                issue_info = issue.get("issue_info") or {}
+                matches = issue.get("matches") or []
 
                 # Map severity
-                severity_raw = issue_info.get("severity", "info")
+                severity_raw = issue_info.get("severity") or "info"
                 severity = self._normalize_severity(severity_raw)
 
                 # Extract affected files
                 affected_files = []
                 for match in matches[:10]:  # Limit to 10 files
-                    filename = match.get("filename")
-                    if filename:
-                        affected_files.append(filename)
+                    if isinstance(match, dict):
+                        filename = match.get("filename")
+                        if filename:
+                            affected_files.append(filename)
 
                 # Sample matches (first 5)
                 sample_matches = matches[:5] if matches else None
@@ -312,6 +338,8 @@ class EnrichmentService:
 
     def _normalize_severity(self, severity: str) -> str:
         """Normalize severity string to valid enum value."""
+        if not severity:
+            return "info"
         severity_lower = severity.lower()
         if severity_lower in ("critical", "high", "medium", "low", "info"):
             return severity_lower

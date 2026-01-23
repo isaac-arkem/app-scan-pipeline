@@ -77,7 +77,7 @@ class SupabaseClient:
         enrichment_result = enrichment_query.execute()
 
         # Build set of app_ids to exclude
-        exclude_statuses = {"completed", "not_found", "no_credits"}
+        exclude_statuses = {"completed", "not_found", "no_data", "no_credits"}
         if not include_failed:
             exclude_statuses.add("failed")
 
@@ -203,6 +203,7 @@ class SupabaseClient:
             "completed": 0,
             "failed": 0,
             "not_found": 0,
+            "no_data": 0,
             "no_credits": 0,
         }
 
@@ -249,3 +250,50 @@ class SupabaseClient:
                 developers.add(row["developer_name"])
 
         return sorted(developers)
+
+    def get_app_by_bundle_id(self, bundle_id: str) -> Optional[App]:
+        """Get an app by its bundle ID."""
+        result = (
+            self._client.table("apps")
+            .select("id, bundle_id, platform, app_name, developer_name, category")
+            .eq("bundle_id", bundle_id)
+            .execute()
+        )
+        if result.data:
+            return App(**result.data[0])
+        return None
+
+    def create_app(
+        self,
+        bundle_id: str,
+        platform: str = "Android",
+        app_name: Optional[str] = None,
+    ) -> App:
+        """Create a new app record and return it."""
+        data = {"bundle_id": bundle_id, "platform": platform}
+        if app_name:
+            data["app_name"] = app_name
+        result = (
+            self._client.table("apps")
+            .insert(data)
+            .execute()
+        )
+        return App(**result.data[0])
+
+    def get_or_create_app(
+        self,
+        bundle_id: str,
+        platform: str = "Android",
+        app_name: Optional[str] = None,
+    ) -> App:
+        """Get an existing app or create a new one."""
+        app = self.get_app_by_bundle_id(bundle_id)
+        if app:
+            # Update app name if provided and currently missing
+            if app_name and not app.app_name:
+                self._client.table("apps").update(
+                    {"app_name": app_name}
+                ).eq("id", app.id).execute()
+                app.app_name = app_name
+            return app
+        return self.create_app(bundle_id, platform, app_name)

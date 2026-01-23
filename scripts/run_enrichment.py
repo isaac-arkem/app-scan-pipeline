@@ -33,6 +33,18 @@ console = Console()
 
 @click.command()
 @click.option(
+    "--scan", "-s",
+    type=str,
+    multiple=True,
+    help="Bundle ID(s) to scan directly (can be used multiple times, e.g., -s com.app1 -s com.app2)"
+)
+@click.option(
+    "--name", "-n",
+    type=str,
+    default=None,
+    help="App name to use when scanning a single bundle ID (only works with --scan)"
+)
+@click.option(
     "--limit", "-l",
     type=int,
     default=None,
@@ -86,7 +98,15 @@ console = Console()
     default=False,
     help="List available developers and exit"
 )
+@click.option(
+    "--debug",
+    is_flag=True,
+    default=False,
+    help="Show raw API responses for debugging"
+)
 def main(
+    scan: tuple,
+    name: str,
     limit: int,
     category: str,
     app_name: str,
@@ -96,6 +116,7 @@ def main(
     dry_run: bool,
     list_categories: bool,
     list_developers: bool,
+    debug: bool,
 ):
     """
     BeVigil App Enrichment CLI
@@ -103,6 +124,10 @@ def main(
     Enrich Android apps with security intelligence from BeVigil OSINT API.
 
     Examples:
+
+        # Scan specific app(s) by bundle ID
+        python scripts/run_enrichment.py --scan com.facebook.katana
+        python scripts/run_enrichment.py -s com.app1 -s com.app2 -s com.app3
 
         # Process 5 apps (good for testing)
         python scripts/run_enrichment.py --limit 5
@@ -152,25 +177,51 @@ def main(
         console.print(f"\n[dim]Total: {len(developers)} developers[/dim]")
         return
 
-    # Show current stats
-    stats = supabase.get_stats()
-    _display_stats(stats)
+    # Handle direct scan by bundle IDs
+    if scan:
+        # Validate --name usage
+        if name and len(scan) > 1:
+            console.print("[red]Error: --name can only be used with a single --scan bundle ID[/red]")
+            console.print("When scanning multiple apps, omit --name or scan them separately.")
+            sys.exit(1)
 
-    # Get pending apps with filters
-    console.print("\n[bold]Fetching apps to process...[/bold]")
+        console.print(f"\n[bold]Scanning {len(scan)} app(s) by bundle ID...[/bold]")
+        apps = []
+        for i, bid in enumerate(scan):
+            bid = bid.strip()
+            if not bid:
+                continue
+            # Only apply name to the first (and only) app when --name is provided
+            app_name_to_use = name if (name and i == 0) else None
+            console.print(f"  Resolving: {bid}")
+            app = supabase.get_or_create_app(bid, platform="Android", app_name=app_name_to_use)
+            apps.append(app)
+            name_display = f" ({app.app_name})" if app.app_name else ""
+            console.print(f"    [green]✓[/green] App ID: {app.id}{name_display}")
+        
+        if not apps:
+            console.print("[yellow]No valid bundle IDs provided.[/yellow]")
+            return
+    else:
+        # Show current stats
+        stats = supabase.get_stats()
+        _display_stats(stats)
 
-    apps = supabase.get_pending_apps(
-        limit=limit,
-        category=category,
-        app_name_contains=app_name,
-        bundle_id_contains=bundle_id,
-        developer_contains=developer,
-        include_failed=include_failed,
-    )
+        # Get pending apps with filters
+        console.print("\n[bold]Fetching apps to process...[/bold]")
 
-    if not apps:
-        console.print("[yellow]No apps found matching the criteria.[/yellow]")
-        return
+        apps = supabase.get_pending_apps(
+            limit=limit,
+            category=category,
+            app_name_contains=app_name,
+            bundle_id_contains=bundle_id,
+            developer_contains=developer,
+            include_failed=include_failed,
+        )
+
+        if not apps:
+            console.print("[yellow]No apps found matching the criteria.[/yellow]")
+            return
 
     # Display what will be processed
     _display_apps_to_process(apps, dry_run)
@@ -189,7 +240,7 @@ def main(
         return
 
     # Run enrichment
-    _run_enrichment(apps, supabase)
+    _run_enrichment(apps, supabase, debug=debug)
 
 
 def _display_stats(stats):
@@ -205,9 +256,10 @@ def _display_stats(stats):
     table.add_row("Processing", f"[blue]{stats.processing}[/blue]")
     table.add_row("Failed", f"[red]{stats.failed}[/red]")
     table.add_row("Not Found", f"[dim]{stats.not_found}[/dim]")
+    table.add_row("No Data", f"[dim]{stats.no_data}[/dim]")
     table.add_row("No Credits", f"[red]{stats.no_credits}[/red]")
 
-    remaining = stats.total_android_apps - stats.completed - stats.not_found - stats.no_credits
+    remaining = stats.total_android_apps - stats.completed - stats.not_found - stats.no_data - stats.no_credits
     table.add_row("─" * 20, "─" * 10)
     table.add_row("Remaining to Process", f"[bold]{remaining}[/bold]")
 
@@ -240,7 +292,7 @@ def _display_apps_to_process(apps, dry_run: bool):
     console.print(f"\n[bold]Total apps to process: {len(apps)}[/bold]")
 
 
-def _run_enrichment(apps, supabase: SupabaseClient):
+def _run_enrichment(apps, supabase: SupabaseClient, debug: bool = False):
     """Run the enrichment process with progress display."""
     # Initialize clients
     try:
@@ -253,6 +305,7 @@ def _run_enrichment(apps, supabase: SupabaseClient):
     results = {
         "completed": 0,
         "not_found": 0,
+        "no_data": 0,
         "failed": 0,
         "no_credits": 0,
     }
@@ -286,6 +339,9 @@ def _run_enrichment(apps, supabase: SupabaseClient):
                 elif status == "not_found":
                     results["not_found"] += 1
                     progress.console.print(f"  [yellow]⊘ Not found in BeVigil[/yellow]")
+                elif status == "no_data":
+                    results["no_data"] += 1
+                    progress.console.print(f"  [yellow]⊘ No data returned by BeVigil[/yellow]")
                 elif status == "no_credits":
                     results["no_credits"] += 1
                     progress.console.print(f"  [red]✗ No credits remaining - stopping[/red]")
@@ -321,6 +377,7 @@ def _display_results(results: dict):
     panel_content = f"""
 [green]Completed:[/green] {results['completed']}
 [yellow]Not Found:[/yellow] {results['not_found']}
+[yellow]No Data:[/yellow] {results['no_data']}
 [red]Failed:[/red] {results['failed']}
 [red]No Credits:[/red] {results['no_credits']}
 

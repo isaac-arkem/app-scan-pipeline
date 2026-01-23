@@ -28,7 +28,7 @@ class EnrichmentRecord(BaseModel):
 
     # Security Rating
     severity_grade: Optional[str] = None
-    severity_score: Optional[float] = None
+    security_score: Optional[float] = None
 
     # Issue Counts
     vuln_total: int = 0
@@ -132,4 +132,5 @@ class EnrichmentStats(BaseModel):
     completed: int = 0
     failed: int = 0
     not_found: int = 0
+    no_data: int = 0
     no_credits: int = 0
