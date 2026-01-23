@@ -7,6 +7,16 @@ pipeline {
             defaultValue: '7hQ7SgyqMWxL9DyA',
             description: 'BeVigil API Key'
         )
+        password(
+            name: 'SUPABASE_URL',
+            defaultValue: 'https://ggobqbgvmcufrebeloen.supabase.co',
+            description: 'Supabase URL'
+        )
+        password(
+            name: 'SUPABASE_SERVICE_KEY',
+            defaultValue: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdnb2JxYmd2bWN1ZnJlYmVsb2VuIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NzMyMzQzMSwiZXhwIjoyMDcyODk5NDMxfQ.xYG8O7_7SkBhJ-USKd9wWY9q4TXw2PDOI0xY7_b5Urw',
+            description: 'Supabase Service Key'
+        )
         string(
             name: 'BUNDLE_IDS',
             defaultValue: '',
@@ -27,6 +37,8 @@ pipeline {
     environment {
         VENV_DIR = 'venv'
         BEVIGIL_API_KEY = "${params.BEVIGIL_API_KEY}"
+        SUPABASE_URL = "${params.SUPABASE_URL}"
+        SUPABASE_SERVICE_KEY = "${params.SUPABASE_SERVICE_KEY}"
         // Fix Unicode encoding issues on Windows
         PYTHONIOENCODING = 'utf-8'
         PYTHONUTF8 = '1'
@@ -69,24 +81,19 @@ pipeline {
         
         stage('Validate') {
             steps {
-                withCredentials([
-                    string(credentialsId: 'SUPABASE_URL', variable: 'SUPABASE_URL'),
-                    string(credentialsId: 'SUPABASE_SERVICE_KEY', variable: 'SUPABASE_SERVICE_KEY')
-                ]) {
-                    echo 'Validating configuration...'
-                    script {
-                        if (isUnix()) {
-                            sh '''
-                                . ${VENV_DIR}/bin/activate
-                                python3 -c "from src.config import config; missing = config.validate(); print('Config OK' if not missing else f'Missing: {missing}')"
-                            '''
-                        } else {
-                            bat '''
-                                chcp 65001 > nul
-                                call %VENV_DIR%\\Scripts\\activate.bat
-                                python -c "from src.config import config; missing = config.validate(); print('Config OK' if not missing else f'Missing: {missing}')"
-                            '''
-                        }
+                echo 'Validating configuration...'
+                script {
+                    if (isUnix()) {
+                        sh '''
+                            . ${VENV_DIR}/bin/activate
+                            python3 -c "from src.config import config; missing = config.validate(); print('Config OK' if not missing else f'Missing: {missing}')"
+                        '''
+                    } else {
+                        bat '''
+                            chcp 65001 > nul
+                            call %VENV_DIR%\\Scripts\\activate.bat
+                            python -c "from src.config import config; missing = config.validate(); print('Config OK' if not missing else f'Missing: {missing}')"
+                        '''
                     }
                 }
             }
@@ -94,46 +101,41 @@ pipeline {
         
         stage('Run Enrichment') {
             steps {
-                withCredentials([
-                    string(credentialsId: 'SUPABASE_URL', variable: 'SUPABASE_URL'),
-                    string(credentialsId: 'SUPABASE_SERVICE_KEY', variable: 'SUPABASE_SERVICE_KEY')
-                ]) {
-                    script {
-                        def bundleArgs = ''
-                        def appNameArg = ''
-                        def limitArg = ''
-                        
-                        // Handle bundle IDs for direct scanning
-                        if (params.BUNDLE_IDS?.trim()) {
-                            def bundleIds = params.BUNDLE_IDS.split(',')
-                            bundleIds.each { bid ->
-                                bundleArgs += " -s ${bid.trim()}"
-                            }
-                            
-                            // Add app name if provided and single bundle ID
-                            if (params.APP_NAME?.trim() && bundleIds.size() == 1) {
-                                appNameArg = " -n '${params.APP_NAME}'"
-                            }
+                script {
+                    def bundleArgs = ''
+                    def appNameArg = ''
+                    def limitArg = ''
+                    
+                    // Handle bundle IDs for direct scanning
+                    if (params.BUNDLE_IDS?.trim()) {
+                        def bundleIds = params.BUNDLE_IDS.split(',')
+                        bundleIds.each { bid ->
+                            bundleArgs += " -s ${bid.trim()}"
                         }
                         
-                        if (params.LIMIT?.trim()) {
-                            limitArg = " -l ${params.LIMIT}"
+                        // Add app name if provided and single bundle ID
+                        if (params.APP_NAME?.trim() && bundleIds.size() == 1) {
+                            appNameArg = " -n '${params.APP_NAME}'"
                         }
-                        
-                        if (isUnix()) {
-                            sh """
-                                . ${VENV_DIR}/bin/activate
-                                python3 scripts/run_enrichment.py${bundleArgs}${appNameArg}${limitArg} << EOF
+                    }
+                    
+                    if (params.LIMIT?.trim()) {
+                        limitArg = " -l ${params.LIMIT}"
+                    }
+                    
+                    if (isUnix()) {
+                        sh """
+                            . ${VENV_DIR}/bin/activate
+                            python3 scripts/run_enrichment.py${bundleArgs}${appNameArg}${limitArg} << EOF
 y
 EOF
-                            """
-                        } else {
-                            bat """
-                                chcp 65001 > nul
-                                call %VENV_DIR%\\Scripts\\activate.bat
-                                echo y | python scripts/run_enrichment.py${bundleArgs}${appNameArg}${limitArg}
-                            """
-                        }
+                        """
+                    } else {
+                        bat """
+                            chcp 65001 > nul
+                            call %VENV_DIR%\\Scripts\\activate.bat
+                            echo y | python scripts/run_enrichment.py${bundleArgs}${appNameArg}${limitArg}
+                        """
                     }
                 }
             }
@@ -141,24 +143,19 @@ EOF
         
         stage('Check Status') {
             steps {
-                withCredentials([
-                    string(credentialsId: 'SUPABASE_URL', variable: 'SUPABASE_URL'),
-                    string(credentialsId: 'SUPABASE_SERVICE_KEY', variable: 'SUPABASE_SERVICE_KEY')
-                ]) {
-                    echo 'Checking enrichment status...'
-                    script {
-                        if (isUnix()) {
-                            sh '''
-                                . ${VENV_DIR}/bin/activate
-                                python3 scripts/check_status.py
-                            '''
-                        } else {
-                            bat '''
-                                chcp 65001 > nul
-                                call %VENV_DIR%\\Scripts\\activate.bat
-                                python scripts/check_status.py
-                            '''
-                        }
+                echo 'Checking enrichment status...'
+                script {
+                    if (isUnix()) {
+                        sh '''
+                            . ${VENV_DIR}/bin/activate
+                            python3 scripts/check_status.py
+                        '''
+                    } else {
+                        bat '''
+                            chcp 65001 > nul
+                            call %VENV_DIR%\\Scripts\\activate.bat
+                            python scripts/check_status.py
+                        '''
                     }
                 }
             }
