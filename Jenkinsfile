@@ -1,29 +1,6 @@
 pipeline {
     agent any
     
-    parameters {
-        string(
-            name: 'BUNDLE_IDS',
-            defaultValue: '',
-            description: 'Comma-separated list of Android bundle IDs to scan (e.g., com.whatsapp,com.facebook.katana)'
-        )
-        string(
-            name: 'APP_NAME',
-            defaultValue: '',
-            description: 'Optional: App name (only works when scanning a single bundle ID)'
-        )
-        booleanParam(
-            name: 'INCLUDE_FAILED',
-            defaultValue: false,
-            description: 'Include previously failed apps for retry'
-        )
-        string(
-            name: 'LIMIT',
-            defaultValue: '',
-            description: 'Optional: Maximum number of apps to process'
-        )
-    }
-    
     environment {
         // These should be configured in Jenkins credentials
         BEVIGIL_API_KEY = credentials('bevigil-api-key')
@@ -70,11 +47,6 @@ pipeline {
                         if (params.APP_NAME?.trim() && bundleIds.size() == 1) {
                             cmd += " -n '${params.APP_NAME}'"
                         }
-                    }
-                    
-                    // Add optional flags
-                    if (params.INCLUDE_FAILED) {
-                        cmd += ' -f'
                     }
                     
                     if (params.LIMIT?.trim()) {
