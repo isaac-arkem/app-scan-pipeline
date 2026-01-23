@@ -133,15 +133,6 @@ EOF
     }
     
     post {
-        always {
-            node('') {
-                echo 'Cleaning up...'
-                cleanWs(cleanWhenNotBuilt: false,
-                        deleteDirs: true,
-                        disableDeferredWipeout: true,
-                        notFailBuild: true)
-            }
-        }
         success {
             echo 'Enrichment completed successfully!'
         }
