@@ -4,7 +4,7 @@ pipeline {
     parameters {
         password(
             name: 'BEVIGIL_API_KEY',
-            defaultValue: '7hQ7SgyqMWxL9DyA',
+            defaultValue: 'HABYdqGFnqUODwyW',
             description: 'BeVigil API Key'
         )
         password(
