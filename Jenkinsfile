@@ -1,22 +1,8 @@
+
 pipeline {
     agent any
     
     parameters {
-        password(
-            name: 'BEVIGIL_API_KEY',
-            defaultValue: 'HABYdqGFnqUODwyW',
-            description: 'BeVigil API Key'
-        )
-        password(
-            name: 'SUPABASE_URL',
-            defaultValue: 'https://ggobqbgvmcufrebeloen.supabase.co',
-            description: 'Supabase URL'
-        )
-        password(
-            name: 'SUPABASE_SERVICE_KEY',
-            defaultValue: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdnb2JxYmd2bWN1ZnJlYmVsb2VuIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NzMyMzQzMSwiZXhwIjoyMDcyODk5NDMxfQ.xYG8O7_7SkBhJ-USKd9wWY9q4TXw2PDOI0xY7_b5Urw',
-            description: 'Supabase Service Key'
-        )
         string(
             name: 'BUNDLE_IDS',
             defaultValue: '',
@@ -31,10 +17,9 @@ pipeline {
     
     environment {
         VENV_DIR = 'venv'
-        BEVIGIL_API_KEY = "${params.BEVIGIL_API_KEY}"
-        SUPABASE_URL = "${params.SUPABASE_URL}"
-        SUPABASE_SERVICE_KEY = "${params.SUPABASE_SERVICE_KEY}"
-        // Fix Unicode encoding issues on Windows
+        BEVIGIL_API_KEY = credentials('bevigil-api-key')
+        SUPABASE_URL = credentials('supabase-url')
+        SUPABASE_SERVICE_KEY = credentials('supabase-service-key')
         PYTHONIOENCODING = 'utf-8'
         PYTHONUTF8 = '1'
     }
