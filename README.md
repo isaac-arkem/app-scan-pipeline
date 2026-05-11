@@ -37,7 +37,7 @@ Create a `.env` file with:
 ```env
 BEVIGIL_API_KEY=your_bevigil_api_key
 SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_SERVICE_KEY=your_service_role_key
+SUPABASE_SECRET_KEY=sb_secret_your_new_secret_key
 ```
 
 Optional settings:

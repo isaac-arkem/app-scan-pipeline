@@ -16,9 +16,9 @@ class Config:
     BEVIGIL_API_KEY: str = os.getenv("BEVIGIL_API_KEY", "")
     BEVIGIL_BASE_URL: str = "https://osint.bevigil.com"
 
-    # Supabase
+    # Supabase (project URL + new secret API key sb_secret_..., not legacy service_role JWT)
     SUPABASE_URL: str = os.getenv("SUPABASE_URL", "")
-    SUPABASE_SERVICE_KEY: str = os.getenv("SUPABASE_SERVICE_KEY", "")
+    SUPABASE_SECRET_KEY: str = os.getenv("SUPABASE_SECRET_KEY", "")
 
     # Processing Configuration
     BATCH_SIZE: int = int(os.getenv("BATCH_SIZE", "10"))
@@ -34,8 +34,8 @@ class Config:
             missing.append("BEVIGIL_API_KEY")
         if not cls.SUPABASE_URL:
             missing.append("SUPABASE_URL")
-        if not cls.SUPABASE_SERVICE_KEY:
-            missing.append("SUPABASE_SERVICE_KEY")
+        if not cls.SUPABASE_SECRET_KEY:
+            missing.append("SUPABASE_SECRET_KEY")
         return missing
 
 

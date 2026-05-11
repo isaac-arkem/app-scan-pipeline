@@ -19,10 +19,10 @@ class SupabaseClient:
     ):
         """Initialize the Supabase client."""
         self.url = url or config.SUPABASE_URL
-        self.key = key or config.SUPABASE_SERVICE_KEY
+        self.key = key or config.SUPABASE_SECRET_KEY
 
         if not self.url or not self.key:
-            raise ValueError("Supabase URL and service key are required")
+            raise ValueError("Supabase URL and SUPABASE_SECRET_KEY are required")
 
         self._client: Client = create_client(self.url, self.key)
 

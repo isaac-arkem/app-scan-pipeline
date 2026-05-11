@@ -1,4 +1,8 @@
-
+/* Jenkins Secret text credential IDs:
+   bevigil_api_key        → BEVIGIL_API_KEY
+   supabase-project-url   → SUPABASE_URL (https://…supabase.co from Project Settings → API)
+   supabase-secret-key    → SUPABASE_SECRET_KEY (new sb_secret_… key, not legacy service_role)
+*/
 pipeline {
     agent any
     
@@ -17,9 +21,9 @@ pipeline {
     
     environment {
         VENV_DIR = 'venv'
-        BEVIGIL_API_KEY = credentials('bevigil-api-key')
+        BEVIGIL_API_KEY = credentials('bevigil_api_key')
         SUPABASE_URL = credentials('supabase-url')
-        SUPABASE_SERVICE_KEY = credentials('supabase-service-key')
+        SUPABASE_SECRET_KEY = credentials('supabase-secret-key')
         PYTHONIOENCODING = 'utf-8'
         PYTHONUTF8 = '1'
     }
