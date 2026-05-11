@@ -21,7 +21,7 @@ pipeline {
     
     environment {
         VENV_DIR = 'venv'
-        BEVIGIL_API_KEY = credentials('bevigil_api_key')
+        BEVIGIL_API_KEY = credentials('bevigil-api-key')
         SUPABASE_URL = credentials('supabase-url')
         SUPABASE_SECRET_KEY = credentials('supabase-secret-key')
         PYTHONIOENCODING = 'utf-8'
